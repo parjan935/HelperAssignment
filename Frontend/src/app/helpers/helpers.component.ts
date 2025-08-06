@@ -14,6 +14,7 @@ import axios from 'axios';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
 import {MatSnackBar} from '@angular/material/snack-bar';
+import { endWith } from 'rxjs';
 
 
 interface Helper {
@@ -89,9 +90,9 @@ export class HelpersComponent {
           return h.name != this.selectedHelper.name
         })
 
-        this.openSnackBar(`Deleted ${this.selectedHelper.name}`,"X");
         this.selectedHelper = this.filteredHelpers?.[0]
       }
+      this.openSnackBar(`Deleted ${this.selectedHelper.name}`,"X");
     })
   }
   delete = async () => {
@@ -126,8 +127,9 @@ export class HelpersComponent {
 
   private _snackBar = inject(MatSnackBar);
 
+
   openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action);
+    this._snackBar.open(message, action,{duration:3000,verticalPosition:'bottom',horizontalPosition:'end'});
   }
 
 }

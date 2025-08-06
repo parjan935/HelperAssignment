@@ -10,6 +10,8 @@ import { MatRadioModule } from '@angular/material/radio';
 import { NgFor, NgIf } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+
 import axios from 'axios';
 
 interface Helper {
@@ -21,7 +23,7 @@ interface Helper {
   languages: string[];
   service: string;
   organization: string;
-  vechileType: string;
+  vehicleType: string;
   kycDocx: string;
   employeeID: number;
 }
@@ -40,13 +42,17 @@ interface Helper {
     MatIcon,
     NgFor,
     RouterLink,
-    MatSidenavModule
+    MatSidenavModule,
+    MatProgressSpinnerModule
   ],
   templateUrl: './update-helper.component.html',
   styleUrl: './update-helper.component.scss'
 })
 
 export class UpdateHelperComponent {
+
+  helperLoading = false;
+
 
   inputOptions = {
     services: [
@@ -56,7 +62,7 @@ export class UpdateHelperComponent {
       'maid'
     ],
     orgs: [
-      'string helpers',
+      'springs helpers',
       'ASBL'
     ],
     languages: [
@@ -70,22 +76,27 @@ export class UpdateHelperComponent {
       'Car'
     ]
   };
-  
+
+
   helper: Helper = {} as Helper;
   firstFormGroup = new FormGroup({});
 
   selected: 'helperDetails' | 'helperDocuments' = 'helperDetails';
 
   constructor(private route: ActivatedRoute) { }
-
+  helperID: string = ''
   ngOnInit() {
-    const helperID = this.route.snapshot.paramMap.get('helperID') as string
-    this.getUser(helperID);
+    this.helperLoading = true;
+
+    this.helperID = this.route.snapshot.paramMap.get('helperID') as string
+    this.getUser();
   }
 
-  private getUser = async (helperID: string) => {
+  private getUser = async () => {
+
+
     try {
-      const response = await axios.get(`http://localhost:4000/api/${helperID}`)
+      const response = await axios.get(`http://localhost:4000/api/${this.helperID}`)
       this.helper = response.data
 
       this.firstFormGroup.addControl('name', new FormControl(this.helper.name, [Validators.required]));
@@ -101,12 +112,14 @@ export class UpdateHelperComponent {
       this.firstFormGroup.addControl('phone', new FormControl(this.helper.phone, [Validators.required]));
       this.firstFormGroup.addControl('languages', new FormControl(this.helper.languages, [Validators.required]));
       this.firstFormGroup.addControl('organization', new FormControl(this.helper.organization, [Validators.required]));
-      this.firstFormGroup.addControl('vechileType', new FormControl(this.helper.vechileType, [Validators.required]));
+      this.firstFormGroup.addControl('vehicleType', new FormControl(this.helper.vehicleType, [Validators.required]));
       this.firstFormGroup.addControl('kycDocx', new FormControl(this.helper.kycDocx, [Validators.required]));
 
     } catch (error) {
       console.log(error);
     }
+
+    this.helperLoading = false
   }
 
   imageBorder = 'dashed'
@@ -114,9 +127,16 @@ export class UpdateHelperComponent {
   formSubmitted = false
 
 
-  updateHelper() {
+  updateHelper = async () => {
     this.formSubmitted = true
     console.log(this.firstFormGroup.value);
+    try {
+      const response = await axios.put(`http://localhost:4000/api/${this.helperID}`, this.firstFormGroup?.value)
+      console.log(response);
+
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   get(key: string) {
@@ -139,7 +159,6 @@ export class UpdateHelperComponent {
   }
 
   get selectedLanguages() {
-    
     return this.firstFormGroup.get('languages')?.value || [];
   }
 }

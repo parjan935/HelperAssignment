@@ -9,7 +9,7 @@ const helperSchema = new mongoose.Schema({
   phone: { type: String, required: true },
   service: { type: String, required: true },
   organization: { type: String, required: true },
-  vechileType: { type: String, required: true },
+  vehicleType: { type: String, required: true },
   languages: { type: Array, required: true },
   kycDocx: { type: String, required: true },
   dateJoined: { type: Date, default: '' }

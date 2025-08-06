@@ -99,14 +99,14 @@
 
       <label for="vehicle">Choose vehicle type*</label>
       <mat-form-field appearance="outline">
-        <mat-select placeholder="select veichle type" formControlName="vechileType">
+        <mat-select placeholder="select veichle type" formControlName="vehicleType">
           <mat-option [value]="0">None</mat-option>
-          @for(vt of inputOptions.vechileTypes; track vt){
+          @for(vt of inputOptions.vehicleTypes; track vt){
           <mat-option [value]="vt">{{vt}}</mat-option>
           }
         </mat-select>
       </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('vechileType')?.hasError('required')">this filed is
+      <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
         mandatory*</span>
 
       <label>KYC Document*</label>

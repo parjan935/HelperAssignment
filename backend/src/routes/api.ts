@@ -15,6 +15,7 @@ router.post('/', async (req, res) => {
   const helper = req.body
   console.log(helper)
   helper.employeeID = employeeID
+  helper.dateJoined=Date.now()
   employeeID++
   await new User(helper).save()
   res.json({ message: 'User added successfully!' })
@@ -29,6 +30,8 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params
   const helper = req.body
+  console.log(helper);
+  
   await User.findByIdAndUpdate(id, helper)
   res.json({ message: 'User Updated successfully!' })
 })

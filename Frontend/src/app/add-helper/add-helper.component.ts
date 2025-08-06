@@ -45,7 +45,7 @@ export class AddHelperComponent {
       'maid'
     ],
     orgs: [
-      'string helpers',
+      'springs helpers',
       'ASBL'
     ],
     languages: [
@@ -53,7 +53,7 @@ export class AddHelperComponent {
       'Telugu',
       'Hindi',
     ],
-    vechileTypes: [
+    vehicleTypes: [
       'Auto',
       'Bike',
       'Car'
@@ -74,7 +74,7 @@ export class AddHelperComponent {
     languages: new FormControl([], [Validators.required]),
     service: new FormControl('', [Validators.required]),
     organization: new FormControl('', [Validators.required]),
-    vechileType: new FormControl('', [Validators.required]),
+    vehicleType: new FormControl('', [Validators.required]),
     kycDocx: new FormControl('', [Validators.required])
   });
 

@@ -15,7 +15,7 @@
   </div>
   <div class="content">
     <div class="step" *ngIf="selected=='helperDetails'">
-      <form class="form" [formGroup]="firstFormGroup" (ngSubmit)="updateHelper()">
+      <form *ngIf="!helperLoading else loading"  class="form" [formGroup]="firstFormGroup" (ngSubmit)="updateHelper()">
         <h1>Helper Details</h1>
         <p>Track, Add and Manage all your helpers at one place</p>
 
@@ -108,14 +108,14 @@
 
         <label for="vehicle">Choose vehicle type*</label>
         <mat-form-field appearance="outline">
-          <mat-select placeholder="select veichle type" formControlName="vechileType">
+          <mat-select placeholder="select veichle type" formControlName="vehicleType">
             <mat-option [value]="0">None</mat-option>
             @for(vt of inputOptions.vehicleTypes; track vt){
             <mat-option [value]="vt">{{vt}}</mat-option>
             }
           </mat-select>
         </mat-form-field>
-        <span class="error" *ngIf="formSubmitted && get('vechileType')?.hasError('required')">this filed is
+        <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
           mandatory*</span>
 
 
@@ -128,6 +128,11 @@
 
         <button style="align-self: flex-end;" type="submit"> <mat-icon>update</mat-icon> Update</button>
       </form>
+      <ng-template #loading>
+        <div>
+          <mat-spinner></mat-spinner>
+        </div>
+      </ng-template>
     </div>
     <div *ngIf="selected=='helperDocuments'">
       <h1>Helper Documents</h1>
