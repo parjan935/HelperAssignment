@@ -97,7 +97,10 @@
             <table>
               <tr>
                 <td>Identification Card</td>
-                <td class="view-docx" (click)="openEmployeeID()"><mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon> view</td>
+                <td class="view-docx" (click)="openEmployeeIdDialog()">
+                  <mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon>
+                  view
+                </td>
               </tr>
               <tr>
                 <td>Employee Code</td>
@@ -128,7 +131,10 @@
               </tr>
               <tr>
                 <td>KYC Document</td>
-                <td>-----</td>
+                <td class="view-docx" (click)="openKycDocxDialog()">
+                  <mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon>
+                  view
+                </td>
               </tr>
             </table>
           </div>
@@ -158,7 +164,6 @@
           <p>Select a helper to diaplay.</p>
         </div>
       </ng-template>
-
     </div>
   </mat-drawer-content>
 </mat-drawer-container>

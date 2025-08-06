@@ -166,7 +166,7 @@ export class HelpersComponent {
       { data: message, duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'end', panelClass: ['no-default-style'] });
   }
 
-  openEmployeeID() {
+  openEmployeeIdDialog() {
     const data = {
       name: this.selectedHelper?.name,
       id: this.selectedHelper?.employeeID,
@@ -174,6 +174,10 @@ export class HelpersComponent {
       QrUrl: this.selectedHelper?.employeeId_QR,
     }
     this.dialog.open(EmployeeIdDialogComponent, { data })
+  }
+
+  openKycDocxDialog(){
+    /// 
   }
 
 }

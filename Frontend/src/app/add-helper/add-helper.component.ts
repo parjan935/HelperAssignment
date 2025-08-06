@@ -161,7 +161,7 @@ export class AddHelperComponent {
       })
 
     dialogRef.afterClosed().subscribe(() => {
-      this.router.navigate(['/'])
+      // this.router.navigate(['/'])
     });
   }
 
@@ -170,14 +170,18 @@ export class AddHelperComponent {
     try {
       const response = await axios.post('http://localhost:4000/api/', this.firstFormGroup.value)
       console.log("response - ",response);
-      // if(response.?.ok){
-      // }
-      // this.employeeID_QR = response.data.qr
-      // this.employeeID = response.data.id
+      
+      if (response.statusText === "OK") {
+        this.employeeID_QR = response.data.qr
+        this.employeeID = response.data.id
+        this.openEmployeeIdDialog()
+      }
+      else {
+        console.log(response.data.error);
+      }
     } catch (error) {
-      console.log("error - ",error);
+      console.log("error - ", error);
     }
-    // this.openEmployeeIdDialog()
   }
 
 }

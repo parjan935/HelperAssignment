@@ -110,15 +110,24 @@
         mandatory*</span>
 
       <label>KYC Document*</label>
-      <div class="profile-pic kyc-docx" matButton="elevated" (click)="openKycDocxDialog()">
-        <mat-icon>add</mat-icon>
-      </div>
+      <ng-template #upload>
+
+        <div class="profile-pic kyc-docx" matButton="elevated" (click)="openKycDocxDialog()">
+          <mat-icon>add</mat-icon>
+        </div>
+      </ng-template>
       <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
         kyc Document is mandatory*
       </span>
-      <mat-icon style="color: red; width: 100px; height: 100px; font-size: 70px;">picture_as_pdf</mat-icon>
-      <p style="font-size: small;" *ngIf="kycDocName"> 
-         {{kycDocName}}</p>
+
+      <div *ngIf="kycDocName else upload"
+        style="display: flex; margin-top: 10px; background-color: rgb(239, 239, 239); border-radius: 10px; width: fit-content;">
+        <mat-icon style="color: red; width: fit-content; height: fit-content; font-size: 70px; ">description</mat-icon>
+        <p style="font-size: small; margin: 15px 15px 15px 0;  align-self: flex-end; " *ngIf="kycDocName">
+          {{kycDocName}}</p>
+        <mat-icon (click)="kycDocName=''"
+          style="font-size: xx-large; margin: auto 10px auto 10px; color: red; width: fit-content; height: fit-content; cursor: pointer;">delete</mat-icon>
+      </div>
 
       <div class="nav-btns">
         <button matButton matStepperNext>Next <mat-icon>chevron_right</mat-icon>
@@ -205,9 +214,6 @@
             </tr>
           </table>
         </div>
-      </div>
-      <div>
-        <img style="width: 200px; height: 200px;" [src]="employeeID_QR" alt="QR">
       </div>
     </div>
     <div class="nav-btns">

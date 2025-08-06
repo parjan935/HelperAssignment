@@ -1,9 +1,10 @@
 import { Router } from 'express';
 import User from '../models/helperModel';
 import QRCode from 'qrcode'
-import { log } from 'console';
 
-let employeeID = 110
+import { MongoError } from 'mongodb';
+
+let employeeID = 119
 
 
 const router = Router()
@@ -25,24 +26,35 @@ router.get('/', async (req, res) => {
   res.json(users)
 });
 
+
+function isDuplicateKeyError(error: any): error is MongoError & { code: number, keyValue: Record<string, any> } {
+  return error && typeof error === 'object' && error.code === 11000;
+}
+
 router.post('/', async (req, res) => {
   const helper = req.body
-  console.log(helper)
   helper.employeeID = employeeID
   helper.dateJoined = Date.now()
   employeeID++
-  // let Id_QR = ''
   await generateQRCode(helper.employeeID).then((qr) => {
-    console.log("URL - ", qr)
     helper.employeeId_QR = qr
   })
-  console.log("helper - ", helper);
-
   try {
-    await new User(helper).save()
-    res.json({ message: 'User added successfully!', qr: helper.employeeId_QR, id: helper.employeeID })
+    const newHelper = await new User(helper).save()
+    if (!newHelper) return res.status(400).json({ message: "Error creating helper." })
+    res.json({ message: 'User created successfully!', qr: helper.employeeId_QR, id: helper.employeeID })
   } catch (error) {
-    res.json({ error })
+
+    if (isDuplicateKeyError(error)) {
+      return res.status(409).json({
+        error: 'Duplicate entry',
+        field: error.keyValue,
+      });
+    }
+    res.status(500).json({
+      error: 'Server error',
+      details: error instanceof Error ? error.message : 'Unknown error'
+    });
   }
 });
 
