@@ -1,0 +1,158 @@
+<mat-toolbar style="border: 1px solid rgb(206, 204, 204);">
+  <div>Helpers</div>
+</mat-toolbar>
+<mat-toolbar>
+  <div class="filtering">
+    <div class="sorting">
+      <button matButton [matMenuTriggerFor]="sorting">
+        <mat-icon>swap_vert</mat-icon>
+      </button>
+      <mat-menu #sorting="matMenu">
+        <span disabled>Sort by</span>
+        <button mat-menu-item [style.backgroundColor]="sortFilter=='name'?'rgb(231, 230, 247)':''"
+          (click)="sortByName()">Helpers Names(A-Z) <mat-icon
+            [style.display]="sortFilter=='name'?'':'none'">check</mat-icon> </button>
+        <button mat-menu-item [style.backgroundColor]="sortFilter=='ID'?'rgb(231, 230, 247)':''"
+          (click)="sortByID()">Employee ID <mat-icon [style.display]="sortFilter=='ID'?'':'none'">check</mat-icon>
+        </button>
+      </mat-menu>
+    </div>
+
+    <div>
+      <button matButton [matMenuTriggerFor]="filter">
+        <mat-icon>filter_alt</mat-icon>
+      </button>
+
+      <mat-menu #filter="matMenu">
+        <label for="service">Service</label>
+        <input type="text" id="service">
+        <label for="org">Organization</label>
+        <input type="text" id="org">
+      </mat-menu>
+    </div>
+
+    <div class="search">
+      <mat-icon>search</mat-icon>
+      <input type="search" placeholder="Search by name" [(ngModel)]="searchVal" (input)="handleSearchChange()"
+        #searchInput>
+    </div>
+    <span style="font-size:small; color: gray;">{{filteredHelpers.length}} helpers</span>
+  </div>
+  <button routerLink="add-helper">
+    <mat-icon>add</mat-icon>
+    <a style="color: white; text-decoration: none;">Add-helper</a>
+  </button>
+</mat-toolbar>
+
+<mat-drawer-container class="example-container">
+  <mat-drawer mode="side" opened>
+    @for(helper of filteredHelpers; track helper){
+    <div class="helper" (click)="selectedHelper=helper"
+      [ngStyle]="{'background-color':helper.name===selectedHelper.name ? 'rgb(231, 230, 247)':''}">
+      <img
+        [src]="helper.profilePic || 'https://ui-avatars.com/api/?name=' + helper.name + '&background=random&color=fff&rounded=true&length=2'"
+        alt="Profile Photo" alt="Prifile Photo" style="width: 50px; height: 50px;">
+      <div>
+        <p>
+          {{helper.name}}
+        </p>
+        <span>{{helper.service}}</span>
+      </div>
+    </div>
+    }
+    <div *ngIf="filteredHelpers.length==0" style="text-align: center; padding-top: 40px;">
+      <p>No helpers to display.</p>
+      <p>Click on Add Helper to add.</p>
+    </div>
+  </mat-drawer>
+  <mat-drawer-content>
+    <div>
+      <div *ngIf="selectedHelper!==undefined; else noHelpers" class="helper-details">
+        <div style="display: flex; align-items: center; justify-content: space-between;">
+          <div class="main-data">
+            <img style="width: 100px; height: 100px;"
+              [src]="selectedHelper.profilePic ||  'https://ui-avatars.com/api/?name=' + selectedHelper.name + '&background=random&color=fff&rounded=true&length=2'"
+              alt="Profile Photo" alt="Profile Photo" />
+            <div>
+              <p>{{ selectedHelper.name }}</p>
+              <span style="color: rgb(143, 143, 143);">{{ selectedHelper.service }}</span>
+            </div>
+          </div>
+          <div class="edit-delete-btns">
+            <button routerLink="edit-helper/{{selectedHelper._id}}"><mat-icon>edit</mat-icon></button>
+            <button (click)="deleteHelper()"> <mat-icon>delete</mat-icon></button>
+          </div>
+        </div>
+        <div>
+          <h3 style="display: flex;">Employee ID
+            <hr>
+          </h3>
+          <div class="other-data">
+            <table>
+              <tr>
+                <td>Identification Card</td>
+                <td>-----</td>
+              </tr>
+              <tr>
+                <td>Employee Code</td>
+                <td>{{selectedHelper.employeeID}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>Personal Details</h3>
+          <div class="other-data">
+            <table>
+              <tr>
+                <td>Gender</td>
+                <td>{{ selectedHelper.gender }}</td>
+              </tr>
+              <tr>
+                <td>Languages</td>
+                <td>{{ selectedHelper.languages }}</td>
+              </tr>
+              <tr>
+                <td>Mobile</td>
+                <td>{{ selectedHelper.phone }}</td>
+              </tr>
+              <tr>
+                <td>Email</td>
+                <td>{{ selectedHelper.email }}</td>
+              </tr>
+              <tr>
+                <td>KYC Document</td>
+                <td>-----</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+        <div>
+          <h3>Service Details</h3>
+          <div class="other-data">
+            <table>
+              <tr>
+                <td>Type</td>
+                <td>{{ selectedHelper.service }}</td>
+              </tr>
+              <tr>
+                <td>Organization</td>
+                <td>{{ selectedHelper.organization }}</td>
+              </tr>
+              <tr>
+                <td>Joined On</td>
+                <td>{{selectedHelper.dateJoined | date: 'longDate'}}</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </div>
+      <ng-template #noHelpers>
+        <div style="display: flex; height: 100%; justify-content: center; padding-top: 40px;">
+          <p>Select a helper to diaplay.</p>
+        </div>
+      </ng-template>
+
+    </div>
+  </mat-drawer-content>
+</mat-drawer-container>

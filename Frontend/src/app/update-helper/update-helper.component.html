@@ -1,0 +1,136 @@
+<div class="header">
+  <a routerLink="">
+    <mat-icon>chevron_left</mat-icon> Update Helper
+  </a>
+</div>
+
+<div class="update-container">
+  <div class="side-bar">
+    <button (click)="selected='helperDetails'"
+      [style.backgroundColor]="selected=='helperDetails'? 'black':'transparent'"
+      [style.Color]="selected=='helperDetails'? 'white':'black'"><mat-icon>build</mat-icon> HelperDetails</button>
+    <button (click)="selected='helperDocuments'"
+      [style.backgroundColor]="selected=='helperDocuments'? 'black':'transparent'"
+      [style.Color]="selected=='helperDocuments'? 'white':'black'"><mat-icon>description</mat-icon>Documents</button>
+  </div>
+  <div class="content">
+    <div class="step" *ngIf="selected=='helperDetails'">
+      <form class="form" [formGroup]="firstFormGroup" (ngSubmit)="updateHelper()">
+        <h1>Helper Details</h1>
+        <p>Track, Add and Manage all your helpers at one place</p>
+
+        <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
+          <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
+          <ng-template #noPhoto>
+            <mat-icon>upload</mat-icon>
+            Upload <br> Photo
+          </ng-template>
+        </label>
+        <span style="margin-bottom: 30px;">
+          <span *ngIf="get('profilePic')?.value; else noImage">Image uploaded : {{imageName}}</span>
+          <ng-template #noImage> No image uploaded</ng-template>
+          <input type="file" accept="image/*" id="profile-pic" formControlName="profilePic"
+            (change)="onImageSelected($event)" hidden>
+        </span>
+
+        <label for="service">Type of Service*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="Select Type of Service" formControlName="service">
+            @for(s of inputOptions.services; track s){
+            <mat-option [value]="s">{{s}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('service')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label for="organization">Organizatino Name*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="Organizatino Name" formControlName="organization">
+            @for(o of inputOptions.orgs; track o){
+            <mat-option [value]="o">{{o}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('organization')?.hasError('required')">this filed is
+          mandatory*</span>
+
+
+        <label for="name">Full Name*</label>
+        <mat-form-field appearance="outline">
+          <input matInput name="name" placeholder="Full Name" formControlName="name">
+          <!-- [value]="helperName" -->
+          <!-- formControlName="name" -->
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('name')?.hasError('required')">this filed is mandatory*</span>
+
+
+
+        <label for="Languages">Languages*</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="languages" placeholder="Languages" multiple>
+            <mat-select-trigger>
+              {{ selectedLanguages[0] || '' }}
+              <span *ngIf="selectedLanguages.length > 1" class="example-additional-selection">
+                (+{{ selectedLanguages.length - 1 }})
+              </span>
+            </mat-select-trigger>
+            <mat-option *ngFor="let l of inputOptions.languages" [value]="l">{{ l }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('languages')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label for="gender">Gender*</label>
+        <mat-radio-group name="gender" aria-label="Select an option" formControlName="gender">
+          <mat-radio-button value="Male">Male</mat-radio-button>
+          <mat-radio-button value="Female">Female</mat-radio-button>
+          <mat-radio-button value="Other">Other</mat-radio-button>
+        </mat-radio-group>
+        <span class="error" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
+
+
+        <label for="phone">Phone*</label>
+        <mat-form-field appearance="outline">
+          <input matInput type="text" placeholder="Enter phone" formControlName="phone">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('phone')?.hasError('required')">this filed is mandatory*</span>
+
+
+        <label for="email">Email*</label>
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="Enter email" formControlName="email">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && (get('email')?.hasError('required'))">this filed is
+          mandatory*</span>
+        <span class="error" *ngIf="formSubmitted && (get('email')?.invalid)">Invalid email*</span>
+
+
+        <label for="vehicle">Choose vehicle type*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="select veichle type" formControlName="vechileType">
+            <mat-option [value]="0">None</mat-option>
+            @for(vt of inputOptions.vehicleTypes; track vt){
+            <mat-option [value]="vt">{{vt}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('vechileType')?.hasError('required')">this filed is
+          mandatory*</span>
+
+
+        <label>KYC Document*</label>
+        <div class="profile-pic kyc-docx">
+          <mat-icon>add</mat-icon>
+        </div>
+        <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">kyc Document is
+          mandatory*</span>
+
+        <button style="align-self: flex-end;" type="submit"> <mat-icon>update</mat-icon> Update</button>
+      </form>
+    </div>
+    <div *ngIf="selected=='helperDocuments'">
+      <h1>Helper Documents</h1>
+    </div>
+  </div>
+</div>

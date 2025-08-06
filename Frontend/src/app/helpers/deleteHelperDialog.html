@@ -1,0 +1,14 @@
+<div style="display: flex; flex-direction: column; padding: 20px; border-radius: 10px; width: 300px;">
+    <mat-icon (click)="closeDialog()" style="align-self: end; cursor: pointer;">close</mat-icon>
+    <mat-icon style="color: red;">warning</mat-icon>
+    <p>
+        Delete <span style="color: red;">{{data.name}}({{data.service}})</span>
+    </p>
+    <span style="font-size: smaller; color: gray;">You can't undo this action</span>
+
+    <div style="display: flex; justify-content: end; gap: 10px; padding: 20px 0 0 0 ;">
+        <button style="background-color: transparent; color: black; border: 1px solid gray;"
+            (click)="closeDialog()">cancel</button>
+        <button (click)="deleteAndClose()"><mat-icon>delete</mat-icon> Delete</button>
+    </div>
+</div>
