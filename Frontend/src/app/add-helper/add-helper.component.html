@@ -4,7 +4,7 @@
   </a>
 </div>
 
-<mat-stepper class="stepper" [linear]="false" #stepper>
+<mat-stepper class="stepper" [linear]="true" #stepper>
   <mat-step class="step" [stepControl]="firstFormGroup">
     <ng-template matStepLabel>Helper Details</ng-template>
     <form class="step-form" [formGroup]="firstFormGroup" (ngSubmit)="handleSubmitForm1()">
@@ -205,6 +205,9 @@
             </tr>
           </table>
         </div>
+      </div>
+      <div>
+        <img style="width: 200px; height: 200px;" [src]="employeeID_QR" alt="QR">
       </div>
     </div>
     <div class="nav-btns">

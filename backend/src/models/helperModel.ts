@@ -2,7 +2,8 @@ import mongoose from "mongoose";
 
 const helperSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  employeeID:{type:Number,required:true},
+  employeeId_QR:{type:String,required:true},
+  employeeID:{type:Number,required:true,unique:true},
   profilePic: { type: String, default: '' },
   email: { type: String, required: true, unique: true },
   gender: { type: String, required: true },

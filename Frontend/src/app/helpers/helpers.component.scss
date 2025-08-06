@@ -151,6 +151,13 @@ mat-toolbar {
 
 
       .other-data {
+        .view-docx{
+          display: flex; align-items: center; gap: 5px; color: rgb(95, 143, 247); cursor: pointer;
+          width: fit-content;
+        }
+        .view-docx:hover{
+          text-decoration: underline;
+        }
         table {
           width: 100%;
 

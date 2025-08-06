@@ -19,6 +19,7 @@ import { MAT_SNACK_BAR_DATA, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
+import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
 
 
 interface Helper {
@@ -34,7 +35,8 @@ interface Helper {
   vehicleType: string;
   kycDocx: string;
   employeeID: number;
-  dateJoined: Date
+  employeeId_QR: string;
+  dateJoined: Date;
 }
 
 
@@ -85,12 +87,9 @@ export class HelpersComponent {
   selectedDate: Date | null = null
 
   onDateChange(event: MatDatepickerInputEvent<Date>) {
-    console.log('Selected date:', event.value);
     this.selectedDate = event.value;
     const date1 = new Date(this.selectedDate as Date);
-    if (this.searchVal != '') {
-      this.handleSearchChange()
-    }
+    this.handleSearchChange()
     this.filteredHelpers = this.filteredHelpers.filter(h => {
       const date2 = new Date(h.dateJoined);
       return (
@@ -102,43 +101,16 @@ export class HelpersComponent {
     this.selectedHelper = this.filteredHelpers?.[0]
   }
 
-
-
   handleSearchChange() {
-    console.log(this.searchVal);
+    this.selectedDate = null
     this.filteredHelpers = this.helpers.filter((helper) => {
       return helper?.name.toLocaleLowerCase().includes(this.searchVal.toLocaleLowerCase())
     })
     if (this.sortFilter == 'ID') this.sortByID();
     if (this.sortFilter == 'name') this.sortByName();
 
+
     this.selectedHelper = this.filteredHelpers?.[0]
-  }
-
-  deleteHelper() {
-    const dialogRef = this.dialog.open(DeleteHelperDialog, { data: { name: this.selectedHelper.name, service: this.selectedHelper.service } })
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        this.delete()
-        this.helpers = this.helpers.filter((h) => {
-          return h.name != this.selectedHelper.name
-        })
-        this.filteredHelpers = this.filteredHelpers.filter((h) => {
-          return h.name != this.selectedHelper.name
-        })
-
-        this.selectedHelper = this.filteredHelpers?.[0]
-        this.openSnackBar(`Deleted ${this.selectedHelper.name}`);
-      }
-    })
-  }
-
-  delete = async () => {
-    try {
-      await axios.delete(`http://localhost:4000/api/${this.selectedHelper._id}`)
-    } catch (error) {
-      console.log(error);
-    }
   }
 
   sortByName() {
@@ -158,6 +130,33 @@ export class HelpersComponent {
     })
   }
 
+  deleteHelper() {
+    const dialogRef = this.dialog.open(DeleteHelperDialog, { data: { name: this.selectedHelper.name, service: this.selectedHelper.service } })
+    dialogRef.afterClosed().subscribe(result => {
+      if (result) {
+        this.delete()
+        this.helpers = this.helpers.filter((h) => {
+          return h.name != this.selectedHelper.name
+        })
+        this.filteredHelpers = this.filteredHelpers.filter((h) => {
+          return h.name != this.selectedHelper.name
+        })
+
+        this.openSnackBar(`Deleted ${this.selectedHelper.name}`);
+
+        this.selectedHelper = this.filteredHelpers?.[0]
+      }
+    })
+  }
+
+  delete = async () => {
+    try {
+      await axios.delete(`http://localhost:4000/api/${this.selectedHelper._id}`)
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   selectedHelper = this.helpers?.[0]
 
   private _snackBar = inject(MatSnackBar);
@@ -165,6 +164,16 @@ export class HelpersComponent {
   openSnackBar(message: string) {
     this._snackBar.openFromComponent(CustomSnackBarComponent,
       { data: message, duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'end', panelClass: ['no-default-style'] });
+  }
+
+  openEmployeeID() {
+    const data = {
+      name: this.selectedHelper?.name,
+      id: this.selectedHelper?.employeeID,
+      service: this.selectedHelper?.service,
+      QrUrl: this.selectedHelper?.employeeId_QR,
+    }
+    this.dialog.open(EmployeeIdDialogComponent, { data })
   }
 
 }

@@ -12,6 +12,7 @@ import { MatIcon } from '@angular/material/icon';
 import { FileInputDialogComponent } from '../file-input-dialog/file-input-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import axios from 'axios';
+import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
 
 
 @Component({
@@ -59,7 +60,10 @@ export class AddHelperComponent {
     ]
   };
 
-  currDate=Date.now()
+  employeeID_QR: string = ''
+  employeeID: Number | null = null
+
+  currDate = Date.now()
 
   imageName = ''
 
@@ -128,7 +132,6 @@ export class AddHelperComponent {
 
       if (result !== undefined) {
         this.kycDocName = result?.file?.name
-        // this.firstFormGroup.get('kycDocx')?.setValue(result);
         this.firstFormGroup.get('kycDocx')?.setValue(this.kycDocName);
       }
     });
@@ -146,14 +149,35 @@ export class AddHelperComponent {
     });
   }
 
+  openEmployeeIdDialog(): void {
+    const dialogRef = this.dialog.open(EmployeeIdDialogComponent,
+      {
+        data: {
+          name: this.firstFormGroup.get('name')?.value,
+          id: this.employeeID,
+          service: this.firstFormGroup.get('service')?.value,
+          QrUrl: this.employeeID_QR
+        }
+      })
+
+    dialogRef.afterClosed().subscribe(() => {
+      this.router.navigate(['/'])
+    });
+  }
+
   addHelper = async () => {
     console.log(this.firstFormGroup.value);
     try {
       const response = await axios.post('http://localhost:4000/api/', this.firstFormGroup.value)
-      console.log(response);
+      console.log("response - ",response);
+      // if(response.?.ok){
+      // }
+      // this.employeeID_QR = response.data.qr
+      // this.employeeID = response.data.id
     } catch (error) {
-      console.log(error);
+      console.log("error - ",error);
     }
-    this.router.navigate(['/'])
+    // this.openEmployeeIdDialog()
   }
+
 }

@@ -1,0 +1,12 @@
+<div class="dialog">
+    <mat-icon (click)="closeDialog()">close</mat-icon>
+    <div class="data-box">
+        <div class="data">
+            <h3> {{data.name}}</h3>
+            <span>{{data.service}}</span>
+            <span>#{{data.id}}</span>
+            <img [src]="data.QrUrl" alt="">
+        </div>
+    </div>
+    <!-- <button><mat-icon>download</mat-icon> Download</button> -->
+</div>
