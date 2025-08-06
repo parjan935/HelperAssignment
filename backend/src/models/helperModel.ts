@@ -16,11 +16,12 @@ const helperSchema = new mongoose.Schema({
 })
 
 helperSchema.pre('save', function (next) {
-  if (this.isModified('name') && !this.isModified('profilePic')) {
+  if (this.profilePic.trim() === '') {
     this.profilePic = `https://ui-avatars.com/api/?name=${encodeURIComponent(this.name)}&background=random&color=fff&rounded=true&length=2`;
   }
   next();
 });
+
 
 
 const Helper = mongoose.model('Helper', helperSchema);

@@ -31,6 +31,15 @@
       </mat-menu>
     </div>
 
+
+
+    <div class="calendar">
+      <input matInput [matDatepicker]="picker" (dateChange)="onDateChange($event)" [(ngModel)]="selectedDate" hidden>
+      <mat-datepicker #picker></mat-datepicker>
+      <button matButton (click)="picker.open()"> <mat-icon>event</mat-icon></button>
+    </div>
+
+
     <div class="search">
       <mat-icon>search</mat-icon>
       <input type="search" placeholder="Search by name" [(ngModel)]="searchVal" (input)="handleSearchChange()"
@@ -49,9 +58,7 @@
     @for(helper of filteredHelpers; track helper){
     <div class="helper" (click)="selectedHelper=helper"
       [ngStyle]="{'background-color':helper.name===selectedHelper.name ? 'rgb(231, 230, 247)':''}">
-      <img
-        [src]="helper.profilePic || 'https://ui-avatars.com/api/?name=' + helper.name + '&background=random&color=fff&rounded=true&length=2'"
-        alt="Profile Photo" alt="Prifile Photo" style="width: 50px; height: 50px;">
+      <img [src]="helper.profilePic " alt="Profile Photo" alt="Prifile Photo" style="width: 50px; height: 50px;">
       <div>
         <p>
           {{helper.name}}
@@ -62,7 +69,7 @@
     }
     <div *ngIf="filteredHelpers.length==0" style="text-align: center; padding-top: 40px;">
       <p>No helpers to display.</p>
-      <p>Click on Add Helper to add.</p>
+      <p *ngIf="helpers.length==0">Click on Add Helper to add.</p>
     </div>
   </mat-drawer>
   <mat-drawer-content>
@@ -70,9 +77,8 @@
       <div *ngIf="selectedHelper!==undefined; else noHelpers" class="helper-details">
         <div style="display: flex; align-items: center; justify-content: space-between;">
           <div class="main-data">
-            <img style="width: 100px; height: 100px;"
-              [src]="selectedHelper.profilePic ||  'https://ui-avatars.com/api/?name=' + selectedHelper.name + '&background=random&color=fff&rounded=true&length=2'"
-              alt="Profile Photo" alt="Profile Photo" />
+            <img style="width: 100px; height: 100px;" [src]="selectedHelper.profilePic " alt="Profile Photo"
+              alt="Profile Photo" />
             <div>
               <p>{{ selectedHelper.name }}</p>
               <span style="color: rgb(143, 143, 143);">{{ selectedHelper.service }}</span>

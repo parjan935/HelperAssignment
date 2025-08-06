@@ -1,6 +1,5 @@
 import { Router } from 'express';
 import User from '../models/helperModel';
-import { log } from 'console';
 
 let employeeID = 151
 
@@ -30,7 +29,7 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params
   const helper = req.body
-  console.log(helper);
+  // console.log(helper);
   
   await User.findByIdAndUpdate(id, helper)
   res.json({ message: 'User Updated successfully!' })

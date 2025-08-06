@@ -14,7 +14,6 @@ import { MatDialog } from '@angular/material/dialog';
 import axios from 'axios';
 
 
-
 @Component({
   selector: 'app-add-helper',
   standalone: true,
@@ -32,7 +31,7 @@ import axios from 'axios';
     MatIcon,
     NgFor,
     RouterLink,
-    CommonModule
+    CommonModule,
   ],
 })
 export class AddHelperComponent {
@@ -59,6 +58,8 @@ export class AddHelperComponent {
       'Car'
     ]
   };
+
+  currDate=Date.now()
 
   imageName = ''
 

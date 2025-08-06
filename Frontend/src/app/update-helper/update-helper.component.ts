@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ActivatedRoute, RouterLink, RouterOutlet } from '@angular/router';
+import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
 import { Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -80,10 +80,11 @@ export class UpdateHelperComponent {
 
   helper: Helper = {} as Helper;
   firstFormGroup = new FormGroup({});
+  profilePicUrl = ''
 
   selected: 'helperDetails' | 'helperDocuments' = 'helperDetails';
 
-  constructor(private route: ActivatedRoute) { }
+  constructor(private route: ActivatedRoute, private router: Router) { }
   helperID: string = ''
   ngOnInit() {
     this.helperLoading = true;
@@ -98,6 +99,8 @@ export class UpdateHelperComponent {
     try {
       const response = await axios.get(`http://localhost:4000/api/${this.helperID}`)
       this.helper = response.data
+      console.log(this.helper);
+
 
       this.firstFormGroup.addControl('name', new FormControl(this.helper.name, [Validators.required]));
       this.firstFormGroup.addControl('email',
@@ -107,13 +110,14 @@ export class UpdateHelperComponent {
         ])
       );
       this.firstFormGroup.addControl('service', new FormControl(this.helper.service, [Validators.required]));
-      this.firstFormGroup.addControl('profilePic', new FormControl(this.helper.profilePic));
+      this.firstFormGroup.addControl('profilePic', new FormControl(this.helper.profilePic as string));
       this.firstFormGroup.addControl('gender', new FormControl(this.helper.gender, [Validators.required]));
       this.firstFormGroup.addControl('phone', new FormControl(this.helper.phone, [Validators.required]));
       this.firstFormGroup.addControl('languages', new FormControl(this.helper.languages, [Validators.required]));
       this.firstFormGroup.addControl('organization', new FormControl(this.helper.organization, [Validators.required]));
       this.firstFormGroup.addControl('vehicleType', new FormControl(this.helper.vehicleType, [Validators.required]));
       this.firstFormGroup.addControl('kycDocx', new FormControl(this.helper.kycDocx, [Validators.required]));
+      this.profilePicUrl = this.helper.profilePic
 
     } catch (error) {
       console.log(error);
@@ -133,26 +137,26 @@ export class UpdateHelperComponent {
     try {
       const response = await axios.put(`http://localhost:4000/api/${this.helperID}`, this.firstFormGroup?.value)
       console.log(response);
-
+      alert('Helper update successfull')
+      this.router.navigate(['/'])
     } catch (error) {
       console.log(error);
     }
-  }
 
+  }
   get(key: string) {
     return this.firstFormGroup.get(key)
   }
 
-  imageName = ''
   onImageSelected(event: Event): void {
     const input = event.target as HTMLInputElement;
     const file = input.files?.[0];
     this.imageBorder = 'hidden'
     if (file && file.type.startsWith('image/')) {
-      this.imageName = file.name
       const reader = new FileReader();
       reader.onload = () => {
-        // this.firstFormGroup.get('profilePic')?.setValue(reader.result as string);
+        this.profilePicUrl = reader.result as string
+        // this.firstFormGroup.get('profilePic')?.setValue(this.profilePicUrl);
       };
       reader.readAsDataURL(file)
     }

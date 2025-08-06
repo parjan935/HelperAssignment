@@ -4,7 +4,7 @@
   </a>
 </div>
 
-<mat-stepper class="stepper" [linear]="isLinear" #stepper>
+<mat-stepper class="stepper" [linear]="false" #stepper>
   <mat-step class="step" [stepControl]="firstFormGroup">
     <ng-template matStepLabel>Helper Details</ng-template>
     <form class="step-form" [formGroup]="firstFormGroup" (ngSubmit)="handleSubmitForm1()">
@@ -116,8 +116,9 @@
       <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
         kyc Document is mandatory*
       </span>
-      <p style="font-size: small;" *ngIf="kycDocName">Selected : {{kycDocName}}</p>
-
+      <mat-icon style="color: red; width: 100px; height: 100px; font-size: 70px;">picture_as_pdf</mat-icon>
+      <p style="font-size: small;" *ngIf="kycDocName"> 
+         {{kycDocName}}</p>
 
       <div class="nav-btns">
         <button matButton matStepperNext>Next <mat-icon>chevron_right</mat-icon>
@@ -179,6 +180,10 @@
               <td>Email</td>
               <td>{{ firstFormGroup.get('email')?.value }}</td>
             </tr>
+            <tr>
+              <td>KYC Document</td>
+              <td>----</td>
+            </tr>
           </table>
         </div>
       </div>
@@ -196,7 +201,7 @@
             </tr>
             <tr>
               <td>Joined On</td>
-              <td>{{ firstFormGroup.get('dateJoined')?.value | date:'mediumDate' }}</td>
+              <td>{{ currDate | date:'mediumDate' }}</td>
             </tr>
           </table>
         </div>

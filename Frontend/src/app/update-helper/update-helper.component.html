@@ -20,16 +20,16 @@
         <p>Track, Add and Manage all your helpers at one place</p>
 
         <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
-          <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
+          <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="profilePicUrl" alt="Profile Photo" />
           <ng-template #noPhoto>
             <mat-icon>upload</mat-icon>
             Upload <br> Photo
           </ng-template>
         </label>
         <span style="margin-bottom: 30px;">
-          <span *ngIf="get('profilePic')?.value; else noImage">Image uploaded : {{imageName}}</span>
+          <span *ngIf="get('profilePic')?.value; else noImage"></span>
           <ng-template #noImage> No image uploaded</ng-template>
-          <input type="file" accept="image/*" id="profile-pic" formControlName="profilePic"
+          <input type="file" accept="image/*" id="profile-pic"
             (change)="onImageSelected($event)" hidden>
         </span>
 
@@ -59,8 +59,6 @@
         <label for="name">Full Name*</label>
         <mat-form-field appearance="outline">
           <input matInput name="name" placeholder="Full Name" formControlName="name">
-          <!-- [value]="helperName" -->
-          <!-- formControlName="name" -->
         </mat-form-field>
         <span class="error" *ngIf="formSubmitted && get('name')?.hasError('required')">this filed is mandatory*</span>
 
@@ -125,7 +123,6 @@
         </div>
         <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">kyc Document is
           mandatory*</span>
-
         <button style="align-self: flex-end;" type="submit"> <mat-icon>update</mat-icon> Update</button>
       </form>
       <ng-template #loading>

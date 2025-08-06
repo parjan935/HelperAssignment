@@ -1,20 +1,24 @@
-import { Component, inject, Input, NgModule, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Inject, inject, Input, NgModule, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatIcon } from "@angular/material/icon";
+import { MatIcon, MatIconModule } from "@angular/material/icon";
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { CommonModule, NgIf } from "@angular/common";
 import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
-import { MatFormField, MatLabel } from "@angular/material/form-field";
+import { MatFormField, MatFormFieldModule, MatLabel } from "@angular/material/form-field";
 import { FormsModule } from '@angular/forms';
 import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
 import axios from 'axios';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 
-import {MatSnackBar} from '@angular/material/snack-bar';
-import { endWith } from 'rxjs';
+import { MAT_SNACK_BAR_DATA, MatSnackBar } from '@angular/material/snack-bar';
+
+
+import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
 
 
 interface Helper {
@@ -37,11 +41,19 @@ interface Helper {
 @Component({
   selector: 'app-helpers',
   standalone: true,
+
   imports: [RouterLink, RouterOutlet
     , MatToolbarModule, MatIcon, MatSidenavModule,
     NgIf, CommonModule, MatButtonModule,
     MatMenuModule, MatLabel, MatFormField,
-    FormsModule, MatOption, MatSelect],
+    FormsModule, MatOption, MatSelect,
+    MatFormFieldModule, MatInputModule,
+    MatDatepickerModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatIconModule,
+    MatButtonModule,
+    MatNativeDateModule, FormsModule],
   templateUrl: './helpers.component.html',
   styleUrl: './helpers.component.scss'
 })
@@ -69,13 +81,38 @@ export class HelpersComponent {
   filteredHelpers = this.helpers
 
   searchVal: string = '';
+  sortFilter = '';
+  selectedDate: Date | null = null
+
+  onDateChange(event: MatDatepickerInputEvent<Date>) {
+    console.log('Selected date:', event.value);
+    this.selectedDate = event.value;
+    const date1 = new Date(this.selectedDate as Date);
+    if (this.searchVal != '') {
+      this.handleSearchChange()
+    }
+    this.filteredHelpers = this.filteredHelpers.filter(h => {
+      const date2 = new Date(h.dateJoined);
+      return (
+        date1.getFullYear() === date2.getFullYear() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getDate() === date2.getDate()
+      );
+    });
+    this.selectedHelper = this.filteredHelpers?.[0]
+  }
+
+
 
   handleSearchChange() {
     console.log(this.searchVal);
-    this.sortFilter = ''
     this.filteredHelpers = this.helpers.filter((helper) => {
       return helper?.name.toLocaleLowerCase().includes(this.searchVal.toLocaleLowerCase())
     })
+    if (this.sortFilter == 'ID') this.sortByID();
+    if (this.sortFilter == 'name') this.sortByName();
+
+    this.selectedHelper = this.filteredHelpers?.[0]
   }
 
   deleteHelper() {
@@ -91,10 +128,11 @@ export class HelpersComponent {
         })
 
         this.selectedHelper = this.filteredHelpers?.[0]
+        this.openSnackBar(`Deleted ${this.selectedHelper.name}`);
       }
-      this.openSnackBar(`Deleted ${this.selectedHelper.name}`,"X");
     })
   }
+
   delete = async () => {
     try {
       await axios.delete(`http://localhost:4000/api/${this.selectedHelper._id}`)
@@ -103,7 +141,6 @@ export class HelpersComponent {
     }
   }
 
-  sortFilter = '';
   sortByName() {
     this.sortFilter = 'name'
     this.filteredHelpers = [...this.filteredHelpers].sort((a, b) => {
@@ -123,13 +160,11 @@ export class HelpersComponent {
 
   selectedHelper = this.helpers?.[0]
 
-
-
   private _snackBar = inject(MatSnackBar);
 
-
-  openSnackBar(message: string, action: string) {
-    this._snackBar.open(message, action,{duration:3000,verticalPosition:'bottom',horizontalPosition:'end'});
+  openSnackBar(message: string) {
+    this._snackBar.openFromComponent(CustomSnackBarComponent,
+      { data: message, duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'end', panelClass: ['no-default-style'] });
   }
 
 }
@@ -154,4 +189,45 @@ class DeleteHelperDialog {
   deleteAndClose() {
     this.dialogRef.close(true);
   }
+}
+
+
+///////  Custom SnakBar
+
+@Component({
+  selector: 'app-custom-snack-bar',
+  standalone: true,
+  imports: [MatIconModule],
+  template: `
+    <span class="custom-snackbar">
+    <div class="message">
+      <mat-icon>warning</mat-icon>
+      {{ message }}
+    </div>
+      <mat-icon class="close">close</mat-icon>
+      
+    </span>
+  `,
+  styles: [`
+    .custom-snackbar {
+      background-color: white;
+      color: red;
+      display: flex;
+      align-items: center;
+      justify-content:space-between;
+      padding: 8px 16px;
+      border-radius: 4px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+    .message{
+      display: flex;
+      align-items: center;
+    }
+    .close{
+      color:black;
+    }
+  `],
+})
+export class CustomSnackBarComponent {
+  constructor(@Inject(MAT_SNACK_BAR_DATA) public message: string) { }
 }
