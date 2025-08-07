@@ -11,13 +11,13 @@
         }
       </mat-select>
     </mat-form-field>
-    <p style="font-size: smaller; color: red; margin: -20px 0 10px 0 " *ngIf="fileType==''">this is mandatory field*</p> 
+    <p style="font-size: smaller; color: red; margin: -20px 0 10px 0 " *ngIf="showError && fileType==''">this is mandatory field*</p> 
 
     <span style="font-size: smaller;">please ensure both sides of document is enabled</span>
     <label class="doc-upload" for="fileInput"> <mat-icon>upload</mat-icon> Click to upload files</label>
     <input type="file" id="fileInput" hidden (change)="onFileSelected($event)" accept="application/pdf" />
-    <p style="font-size: smaller; color: red; " *ngIf="!pdfFile">this is mandatory field*</p> 
-    <p style="font-size: small;">Selected : {{pdfFile?.name}}</p>
+    <p style="font-size: smaller; color: red; margin: 5px;" *ngIf="showError && !pdfFile">this is mandatory field*</p> 
+    <p style="font-size: small;">Selected : {{pdfFile?.name || '---' }}</p>
 
   </mat-dialog-content>
   <mat-dialog-actions>

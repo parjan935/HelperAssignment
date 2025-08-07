@@ -56,8 +56,6 @@ export class FileInputDialogComponent {
       if (file.type === 'application/pdf') {
         this.pdfFile = file;
         this.pdfUrl = URL.createObjectURL(file);
-        console.log('PDF file selected:', this.pdfFile.name);
-        console.log('PDF file Url:', this.pdfUrl);
       } else {
         console.warn('Please upload a valid PDF file.');
       }
@@ -68,8 +66,11 @@ export class FileInputDialogComponent {
     this.dialogRef.close();
   }
 
+  showError=false
+
   saveData(): void {
     if(!this.pdfFile || !this.pdfUrl || !this.fileType){
+      this.showError=true
       return;
     }
     const result = {

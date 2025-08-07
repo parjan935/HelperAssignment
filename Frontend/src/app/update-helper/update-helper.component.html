@@ -15,22 +15,24 @@
   </div>
   <div class="content">
     <div class="step" *ngIf="selected=='helperDetails'">
-      <form *ngIf="!helperLoading else loading"  class="form" [formGroup]="firstFormGroup" (ngSubmit)="updateHelper()">
+      <form *ngIf="!helperLoading else loading" class="form" [formGroup]="firstFormGroup" (ngSubmit)="updateHelper()">
         <h1>Helper Details</h1>
         <p>Track, Add and Manage all your helpers at one place</p>
 
         <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
-          <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="profilePicUrl" alt="Profile Photo" />
+          <img *ngIf="get('profilePic')?.value && !get('profilePic')?.value.startsWith('https://ui-avatars.com'); else noPhoto"
+            [src]="profilePicUrl" alt="Profile Photo" />
           <ng-template #noPhoto>
             <mat-icon>upload</mat-icon>
             Upload <br> Photo
           </ng-template>
         </label>
         <span style="margin-bottom: 30px;">
-          <span *ngIf="get('profilePic')?.value; else noImage"></span>
+          <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value && !get('profilePic')?.value.startsWith('https://ui-avatars.com');  else noImage"
+            style="font-size: small; background-color: rgb(235, 235, 235); padding: 8px; border-radius: 10px; cursor: pointer;">
+            remove image</span>
           <ng-template #noImage> No image uploaded</ng-template>
-          <input type="file" accept="image/*" id="profile-pic"
-            (change)="onImageSelected($event)" hidden>
+          <input type="file" accept="image/*" id="profile-pic" (change)="onImageSelected($event)" hidden>
         </span>
 
         <label for="service">Type of Service*</label>

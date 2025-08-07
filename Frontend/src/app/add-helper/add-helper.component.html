@@ -1,5 +1,5 @@
 <div class="header">
-  <a routerLink="">
+  <a (click)="goToHome()">
     <mat-icon>chevron_left</mat-icon> Add Helper
   </a>
 </div>
@@ -19,7 +19,10 @@
         </ng-template>
       </label>
       <span style="margin-bottom: 30px;">
-        <span>Click to upload image</span>
+        <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value; else noImage"
+          style="font-size: small; background-color: rgb(235, 235, 235); padding: 8px; border-radius: 10px; cursor: pointer;">remove
+          image</span>
+        <ng-template #noImage> No image uploaded</ng-template>
         <input type="file" accept="image/*" id="profile-pic" (change)="onImageSelected($event)" hidden>
       </span>
 
@@ -82,10 +85,12 @@
 
       <label for="phone">Phone*</label>
       <mat-form-field appearance="outline">
-        <input matInput type="tel" id="phone" pattern="^\+?[0-9]{1,4}[ \-]?[0-9]{6,14}$" placeholder="Enter phone"
+        <input matInput type="tel" id="phone" maxlength="10" (keypress)="validate($event)" placeholder="Enter phone"
           formControlName="phone">
       </mat-form-field>
       <span class="error" *ngIf="formSubmitted && get('phone')?.hasError('required')">this filed is mandatory*</span>
+      <span class="error" *ngIf="formSubmitted && get('phone')?.value !=='' && get('phone')?.invalid">invalid mobile
+        number</span>
 
 
       <label for="email">Email*</label>
@@ -109,9 +114,25 @@
       <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
         mandatory*</span>
 
-      <label>KYC Document*</label>
-      <ng-template #upload>
+      <label *ngIf="get('vehicleType')?.value" for="vehicleNo.">Vehicle Number*</label>
+      <mat-form-field *ngIf="get('vehicleType')?.value" appearance="outline">
+        <input matInput placeholder="TS08HR1342" formControlName="vehicleNo">
+      </mat-form-field>
+      <span class="error" *ngIf="formSubmitted && (get('vehicleNo')?.hasError('required'))">this filed is
+        mandatory*</span>
 
+      <label>KYC Document*</label>
+      <div *ngIf="kycDocName else upload"
+        style="display: flex; margin-top: 10px; background-color: rgb(239, 239, 239); border-radius: 10px; width: fit-content;">
+        <mat-icon
+          style="color: rgb(254, 91, 91); width: fit-content; height: fit-content; font-size: 70px; ">description</mat-icon>
+        <p style="font-size: small; margin: 15px 15px 15px 10px;  align-self: flex-end; width: 60%;" *ngIf="kycDocName">
+          {{kycDocName}}</p>
+        <mat-icon (click)="removeKycDocx()"
+          style="font-size: xx-large; margin: auto 10px auto 20px;
+           align-self: flex-end; color: red; width: fit-content; height: fit-content; cursor: pointer;">delete</mat-icon>
+      </div>
+      <ng-template #upload>
         <div class="profile-pic kyc-docx" matButton="elevated" (click)="openKycDocxDialog()">
           <mat-icon>add</mat-icon>
         </div>
@@ -120,14 +141,6 @@
         kyc Document is mandatory*
       </span>
 
-      <div *ngIf="kycDocName else upload"
-        style="display: flex; margin-top: 10px; background-color: rgb(239, 239, 239); border-radius: 10px; width: fit-content;">
-        <mat-icon style="color: red; width: fit-content; height: fit-content; font-size: 70px; ">description</mat-icon>
-        <p style="font-size: small; margin: 15px 15px 15px 0;  align-self: flex-end; " *ngIf="kycDocName">
-          {{kycDocName}}</p>
-        <mat-icon (click)="kycDocName=''"
-          style="font-size: xx-large; margin: auto 10px auto 10px; color: red; width: fit-content; height: fit-content; cursor: pointer;">delete</mat-icon>
-      </div>
 
       <div class="nav-btns">
         <button matButton matStepperNext>Next <mat-icon>chevron_right</mat-icon>

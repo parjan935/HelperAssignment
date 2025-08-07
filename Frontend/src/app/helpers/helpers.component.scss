@@ -9,15 +9,14 @@ mat-toolbar {
     gap: 10px;
 
     button {
+      padding: 5px;
       background-color: transparent;
       color: black;
-      padding: 5px;
-      border: 1px solid gray;
+      border: 0.5px solid gray;
     }
 
     button:hover {
-      color: white;
-      background-color: black;
+      background-color: rgb(216, 216, 216);
     }
 
     .search {
@@ -54,6 +53,7 @@ mat-toolbar {
   background-color: white;
   height: 84%;
 
+
   mat-drawer {
     width: 25%;
     height: 98%;
@@ -89,6 +89,8 @@ mat-toolbar {
       background-color: rgb(239, 239, 239);
     }
   }
+
+
 
   mat-drawer-content {
     width: 70%;
@@ -151,27 +153,27 @@ mat-toolbar {
 
 
       .other-data {
-        .view-docx{
-          display: flex; align-items: center; gap: 5px; color: rgb(95, 143, 247); cursor: pointer;
+        display: flex;
+        width: 100%;
+
+        div {
+          display: flex;
+          flex-direction: column;
+          min-width: 200px;
+          gap: 10px;
+        }
+
+        .view-docx {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+          color: rgb(95, 143, 247);
+          cursor: pointer;
           width: fit-content;
         }
-        .view-docx:hover{
+
+        .view-docx:hover {
           text-decoration: underline;
-        }
-        table {
-          width: 100%;
-
-          tr {
-            display: flex;
-            width: 50%;
-            max-width: 90%;
-            justify-content: space-between;
-
-            td {
-              flex: 1;
-              margin: 5px;
-            }
-          }
         }
       }
     }
@@ -180,14 +182,16 @@ mat-toolbar {
 
 
 
-::ng-deep .mat-mdc-menu-content{
+::ng-deep .mat-mdc-menu-content {
   padding: 15px !important;
 }
-::ng-deep .mat-mdc-menu-item{
+
+::ng-deep .mat-mdc-menu-item {
   font-size: 5px !important;
   border-radius: 10px !important;
   margin-top: 5px !important;
 }
-::ng-deep .mat-mdc-menu-item:hover{
+
+::ng-deep .mat-mdc-menu-item:hover {
   background-color: rgb(231, 230, 247) !important;
 }

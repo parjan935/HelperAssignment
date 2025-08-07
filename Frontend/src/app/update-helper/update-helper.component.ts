@@ -99,8 +99,6 @@ export class UpdateHelperComponent {
     try {
       const response = await axios.get(`http://localhost:4000/api/${this.helperID}`)
       this.helper = response.data
-      console.log(this.helper);
-
 
       this.firstFormGroup.addControl('name', new FormControl(this.helper.name, [Validators.required]));
       this.firstFormGroup.addControl('email',
@@ -133,10 +131,8 @@ export class UpdateHelperComponent {
 
   updateHelper = async () => {
     this.formSubmitted = true
-    console.log(this.firstFormGroup.value);
     try {
       const response = await axios.put(`http://localhost:4000/api/${this.helperID}`, this.firstFormGroup?.value)
-      console.log(response);
       alert('Helper update successfull')
       this.router.navigate(['/'])
     } catch (error) {
@@ -156,10 +152,17 @@ export class UpdateHelperComponent {
       const reader = new FileReader();
       reader.onload = () => {
         this.profilePicUrl = reader.result as string
-        // this.firstFormGroup.get('profilePic')?.setValue(this.profilePicUrl);
+        this.firstFormGroup.get('profilePic')?.setValue(reader.result as never);
       };
       reader.readAsDataURL(file)
     }
+  }
+
+  removeProfilePic() {
+    this.firstFormGroup.get('profilePic')?.reset();
+    this.profilePicUrl = ''
+    this.imageBorder = 'dashed'
+
   }
 
   get selectedLanguages() {

@@ -27,5 +27,18 @@
     button{
         width: fit-content;
         align-self: flex-end;
+        font-size: small;
     }
+}
+
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  #print-section,
+  #print-section * {
+    visibility: visible;
+  }
 }

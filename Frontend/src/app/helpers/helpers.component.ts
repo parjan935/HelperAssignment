@@ -20,6 +20,7 @@ import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/
 import { MatInputModule } from '@angular/material/input';
 import { MatNativeDateModule } from '@angular/material/core';
 import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
+import { MatCardModule } from '@angular/material/card'
 
 
 interface Helper {
@@ -55,15 +56,30 @@ interface Helper {
     MatInputModule,
     MatIconModule,
     MatButtonModule,
+    MatCardModule,
     MatNativeDateModule, FormsModule],
   templateUrl: './helpers.component.html',
   styleUrl: './helpers.component.scss'
 })
 export class HelpersComponent {
 
+  inputOptions = {
+    services: [
+      'Nurse',
+      'Driver',
+      'Cook',
+      'maid'
+    ],
+    orgs: [
+      'springs helpers',
+      'ASBL'
+    ]
+  }
+
   constructor(private dialog: MatDialog) { }
 
   helpers: Helper[] = []
+  filteredHelpers: Helper[] = []
 
   ngOnInit() {
     this.getHelpers();
@@ -80,16 +96,21 @@ export class HelpersComponent {
     }
   }
 
-  filteredHelpers = this.helpers
+  ///// Filtering & Sorting
 
-  searchVal: string = '';
-  sortFilter = '';
+  openFilter = false
+
+  sortFilter: string = 'name';
+  filterVal = {
+    service: '',
+    org: ''
+  }
   selectedDate: Date | null = null
+  searchVal: string = '';
 
   onDateChange(event: MatDatepickerInputEvent<Date>) {
     this.selectedDate = event.value;
     const date1 = new Date(this.selectedDate as Date);
-    this.handleSearchChange()
     this.filteredHelpers = this.filteredHelpers.filter(h => {
       const date2 = new Date(h.dateJoined);
       return (
@@ -99,6 +120,24 @@ export class HelpersComponent {
       );
     });
     this.selectedHelper = this.filteredHelpers?.[0]
+  }
+
+  applyFilter() {
+    if (this.filterVal.org || this.filterVal.service) {
+      this.filteredHelpers = this.helpers.filter((h) => {
+        return h.service == this.filterVal.service && h.organization == this.filterVal.org
+      })
+    }
+    this.openFilter = false
+
+  }
+  resetFilter() {
+    this.filterVal = {
+      service: '',
+      org: ''
+    }
+    this.filteredHelpers = this.helpers
+    this.openFilter = false
   }
 
   handleSearchChange() {
@@ -136,10 +175,10 @@ export class HelpersComponent {
       if (result) {
         this.delete()
         this.helpers = this.helpers.filter((h) => {
-          return h.name != this.selectedHelper.name
+          return h._id != this.selectedHelper._id
         })
         this.filteredHelpers = this.filteredHelpers.filter((h) => {
-          return h.name != this.selectedHelper.name
+          return h._id != this.selectedHelper._id
         })
 
         this.openSnackBar(`Deleted ${this.selectedHelper.name}`);
@@ -176,7 +215,7 @@ export class HelpersComponent {
     this.dialog.open(EmployeeIdDialogComponent, { data })
   }
 
-  openKycDocxDialog(){
+  openKycDocxDialog() {
     /// 
   }
 

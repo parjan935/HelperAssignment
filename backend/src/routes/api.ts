@@ -3,8 +3,8 @@ import User from '../models/helperModel';
 import QRCode from 'qrcode'
 
 import { MongoError } from 'mongodb';
+import { log } from 'console';
 
-let employeeID = 119
 
 
 const router = Router()
@@ -22,10 +22,44 @@ async function generateQRCode(id: Number): Promise<string> {
 }
 
 router.get('/', async (req, res) => {
-  const users = await User.find()
+  let users = await User.find()
+  users = [...users].sort((a, b) => {
+    const h1 = a['name']?.toString().toLowerCase();
+    const h2 = b['name']?.toString().toLowerCase();
+    return h1.localeCompare(h2);
+  })
   res.json(users)
 });
 
+router.get('/search', async (req, res) => {
+  const { services, orgs, searchVal } = req.body
+
+  const helpers=await User.find();
+
+  // const helpers = await User.aggregate([{
+  //   $match: [
+  //     {
+  //       $and: [
+  //         { service: { $in: services } },
+  //         { organization: { $in: orgs } },
+  //       ]
+  //     },
+  //     {
+  //       $or: [
+  //         { name: { $regex: searchVal, $options: 'i' } },
+  //         { phone: { $regex: searchVal, $options: 'i' } },
+  //         { employeeID: { $regex: searchVal, $options: 'i' } }
+  //       ]
+  //     }
+  //   ]
+  // }])
+
+
+
+  console.log(helpers)
+
+  res.json(helpers)
+})
 
 function isDuplicateKeyError(error: any): error is MongoError & { code: number, keyValue: Record<string, any> } {
   return error && typeof error === 'object' && error.code === 11000;
@@ -33,9 +67,17 @@ function isDuplicateKeyError(error: any): error is MongoError & { code: number, 
 
 router.post('/', async (req, res) => {
   const helper = req.body
-  helper.employeeID = employeeID
+
+  const emp = await User.findOne()
+    .sort({ employeeID: -1 })
+    .select('employeeID');
+  const employeeID = emp?.employeeID as number;
+
+  helper.employeeID = employeeID + 1
+
   helper.dateJoined = Date.now()
-  employeeID++
+
+  if (helper.profilePic == null) helper.profilePic = ''
   await generateQRCode(helper.employeeID).then((qr) => {
     helper.employeeId_QR = qr
   })
@@ -67,6 +109,9 @@ router.get('/:id', async (req, res) => {
 router.put('/:id', async (req, res) => {
   const { id } = req.params
   const helper = req.body
+  if (helper.profilePic === null) {
+    helper.profilePic = `https://ui-avatars.com/api/?name=${helper.name}&background=random&color=fff&rounded=true&length=2`
+  }
 
   await User.findByIdAndUpdate(id, helper)
   res.json({ message: 'User Updated successfully!' })
