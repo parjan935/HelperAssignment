@@ -60,9 +60,14 @@ export class AddHelperComponent implements OnInit {
     ]
   };
 
-
-
   filteredServices: string[] = []
+
+  filterServices(s: string) {
+    this.filteredServices = this.inputOptions.services.filter((service) => {
+      return service.toLowerCase().includes(s.toLowerCase());
+    })
+  }
+
   employeeID_QR: string = ''
   employeeID: Number | null = null
 
@@ -153,6 +158,17 @@ export class AddHelperComponent implements OnInit {
   }
   get selectedLanguages() {
     return this.firstFormGroup.get('languages')?.value || [];
+  }
+
+  selectAndDeselectAllLanguages() {
+    console.log(this.selectedLanguages.length, this.inputOptions.languages.length);
+    console.log(this.selectedLanguages);
+
+    const result: string[] = this.selectedLanguages.length - 1 === this.inputOptions.languages.length ? [] : this.inputOptions.languages
+    this.firstFormGroup.get('languages')?.setValue(result)
+    console.log(result);
+    console.log(this.firstFormGroup.get('languages'));
+
   }
 
   /// Dialogs 
