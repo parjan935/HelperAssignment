@@ -71,7 +71,7 @@ export class HelpersComponent {
       'maid'
     ],
     orgs: [
-      'springs helpers',
+      'Springs helpers',
       'ASBL'
     ]
   }
@@ -111,7 +111,7 @@ export class HelpersComponent {
   onDateChange(event: MatDatepickerInputEvent<Date>) {
     this.selectedDate = event.value;
     const date1 = new Date(this.selectedDate as Date);
-    this.filteredHelpers = this.filteredHelpers.filter(h => {
+    this.filteredHelpers = this.helpers.filter(h => {
       const date2 = new Date(h.dateJoined);
       return (
         date1.getFullYear() === date2.getFullYear() &&
@@ -123,14 +123,12 @@ export class HelpersComponent {
   }
 
   applyFilter() {
-    if (this.filterVal.org || this.filterVal.service) {
-      this.filteredHelpers = this.helpers.filter((h) => {
-        return h.service == this.filterVal.service && h.organization == this.filterVal.org
-      })
-    }
+    this.filteredHelpers = this.helpers.filter((h) => {
+      return h.service.includes(this.filterVal.service) && h.organization.includes(this.filterVal.org)
+    })
     this.openFilter = false
-
   }
+
   resetFilter() {
     this.filterVal = {
       service: '',
@@ -206,12 +204,7 @@ export class HelpersComponent {
   }
 
   openEmployeeIdDialog() {
-    const data = {
-      name: this.selectedHelper?.name,
-      id: this.selectedHelper?.employeeID,
-      service: this.selectedHelper?.service,
-      QrUrl: this.selectedHelper?.employeeId_QR,
-    }
+    const data = this.selectedHelper
     this.dialog.open(EmployeeIdDialogComponent, { data })
   }
 

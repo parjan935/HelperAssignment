@@ -1,13 +1,46 @@
 <div class="dialog">
-    <mat-icon (click)="closeDialog()">close</mat-icon>
-    <div class="data-box" id="print-section">
-        <div class="data">
-            <h3> {{data.name}}</h3>
-            <span>{{data.service}}</span>
-            <span>#{{data.id}}</span>
-            <img [src]="data.QrUrl" alt="">
+    <div>
+        <h1>Employee ID</h1>
+        <mat-icon (click)="closeDialog()">close</mat-icon>
+    </div>
+    <div class="data" id="print-section">
+        <div class="data-box-1">
+            <div class="org-details">
+                <mat-icon>account_tree</mat-icon>
+                <div>
+                    <h2>{{helper.organization}}</h2>
+                    <p>Employee IdCard</p>
+                </div>
+            </div>
+            <div class="helper-details">
+                <h3> 
+                    <mat-icon *ngIf="helper.profilePic.startsWith('https://ui-avatars.com')">person</mat-icon>
+                    <img *ngIf="!helper.profilePic.startsWith('https://ui-avatars.com')" [src]="helper.profilePic" alt="">
+                    {{helper.name}}
+                </h3>
+                <span>{{helper.service}}</span>
+                <span>#{{helper.employeeID}}</span>
+                <img [src]="helper.employeeId_QR" alt="">
+            </div>
+        </div>
+
+        <div class="data-box-2">
+            <div>
+                <div>
+                    <span>Phone No </span>
+                    <span>employee ID </span>
+                    <span>Joined Date </span>
+                </div>
+                <div>
+                    <span>: {{helper.phone}}</span>
+                    <span>: {{helper.employeeID}}</span>
+                    <span>: {{helper.dateJoined | date: 'longDate'}}</span>
+                </div>
+            </div>
+
+            <img [src]="helper.employeeId_QR" alt="">
+            <p>Un-authorised usage of some-one else's card could be considered a legal offence</p>
         </div>
     </div>
     <button (click)="downloadID()"><mat-icon>download</mat-icon> Download</button>
-
 </div>

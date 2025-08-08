@@ -34,7 +34,7 @@ router.get('/', async (req, res) => {
 router.get('/search', async (req, res) => {
   const { services, orgs, searchVal } = req.body
 
-  const helpers=await User.find();
+  const helpers = await User.find();
 
   // const helpers = await User.aggregate([{
   //   $match: [
@@ -53,9 +53,6 @@ router.get('/search', async (req, res) => {
   //     }
   //   ]
   // }])
-
-
-
   console.log(helpers)
 
   res.json(helpers)
@@ -84,7 +81,7 @@ router.post('/', async (req, res) => {
   try {
     const newHelper = await new User(helper).save()
     if (!newHelper) return res.status(400).json({ message: "Error creating helper." })
-    res.json({ message: 'User created successfully!', qr: helper.employeeId_QR, id: helper.employeeID })
+    res.json({ message: 'User created successfully!', helper: newHelper })
   } catch (error) {
 
     if (isDuplicateKeyError(error)) {

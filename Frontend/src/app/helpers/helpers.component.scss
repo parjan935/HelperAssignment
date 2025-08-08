@@ -19,6 +19,32 @@ mat-toolbar {
       background-color: rgb(216, 216, 216);
     }
 
+    .filter-by-servOrg {
+      div {
+        width: 350px;
+        flex-direction: column;
+        background-color: rgb(248, 248, 248);
+        z-index: 1000;
+        position: fixed;
+        top: 115px;
+        left: 60px;
+        mat-card-actions{
+          align-self: flex-end;
+          padding: 20px;
+          padding-top: 0;
+          gap: 10px;
+          button{
+            color: white;
+            background-color: rgb(45, 45, 45);
+            padding: 10px 30px;
+          }
+          button:hover{
+            background-color: black;
+          }
+        }
+      }
+    }
+
     .search {
       display: flex;
       align-items: center;
@@ -160,7 +186,7 @@ mat-toolbar {
           display: flex;
           flex-direction: column;
           min-width: 200px;
-          gap: 10px;
+          gap: 15px;
         }
 
         .view-docx {

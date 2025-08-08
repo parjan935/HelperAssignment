@@ -59,6 +59,8 @@ export class FileInputDialogComponent {
       } else {
         console.warn('Please upload a valid PDF file.');
       }
+
+      
     }
   }
 

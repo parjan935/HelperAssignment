@@ -45,7 +45,7 @@ export class AddHelperComponent implements OnInit {
       'maid'
     ],
     orgs: [
-      'springs helpers',
+      'Springs helpers',
       'ASBL'
     ],
     languages: [
@@ -70,6 +70,8 @@ export class AddHelperComponent implements OnInit {
 
   employeeID_QR: string = ''
   employeeID: Number | null = null
+
+  helperData = {}
 
   currDate = Date.now()
 
@@ -206,12 +208,7 @@ export class AddHelperComponent implements OnInit {
   openEmployeeIdDialog(): void {
     const dialogRef = this.dialog.open(EmployeeIdDialogComponent,
       {
-        data: {
-          name: this.firstFormGroup.get('name')?.value,
-          id: this.employeeID,
-          service: this.firstFormGroup.get('service')?.value,
-          QrUrl: this.employeeID_QR
-        }
+        data: this.helperData
       })
     dialogRef.afterClosed().subscribe(() => {
       this.router.navigate(['/'])
@@ -219,22 +216,6 @@ export class AddHelperComponent implements OnInit {
   }
 
 
-  addHelper = async () => {
-    try {
-      const response = await axios.post('http://localhost:4000/api/', this.firstFormGroup.value)
-
-      if (response.statusText === "OK") {
-        this.employeeID_QR = response.data.qr
-        this.employeeID = response.data.id
-        this.openVerifiedDialog()
-      }
-      else {
-        console.log(response.data.error);
-      }
-    } catch (error) {
-      console.log("error - ", error);
-    }
-  }
 
 
   isFormGroupEmpty(formGroup: FormGroup): boolean {
@@ -256,6 +237,24 @@ export class AddHelperComponent implements OnInit {
       if (confirm('You have unsaved changes.\nAre you sure you want to go back? All progress will be lost.')) {
         this.router.navigate(['/'])
       }
+    }
+  }
+
+  addHelper = async () => {
+    try {
+      const response = await axios.post('http://localhost:4000/api/', this.firstFormGroup.value)
+
+      if (response.statusText === "OK") {
+        this.helperData = response.data.helper
+        this.employeeID_QR = response.data.qr
+        this.employeeID = response.data.id
+        this.openVerifiedDialog()
+      }
+      else {
+        console.log(response.data.error);
+      }
+    } catch (error) {
+      console.log("error - ", error);
     }
   }
 
