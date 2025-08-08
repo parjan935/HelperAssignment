@@ -6,7 +6,8 @@
     <div class="data" id="print-section">
         <div class="data-box-1">
             <div class="org-details">
-                <mat-icon>account_tree</mat-icon>
+                <mat-icon *ngIf="helper.organization!=='ASBL'">account_tree</mat-icon>
+                <mat-icon *ngIf="helper.organization==='ASBL'">apartment</mat-icon>
                 <div>
                     <h2>{{helper.organization}}</h2>
                     <p>Employee IdCard</p>
@@ -33,7 +34,7 @@
                 </div>
                 <div>
                     <span>: {{helper.phone}}</span>
-                    <span>: {{helper.employeeID}}</span>
+                    <span>: #{{helper.employeeID}}</span>
                     <span>: {{helper.dateJoined | date: 'longDate'}}</span>
                 </div>
             </div>
@@ -42,5 +43,5 @@
             <p>Un-authorised usage of some-one else's card could be considered a legal offence</p>
         </div>
     </div>
-    <button (click)="downloadID()"><mat-icon>download</mat-icon> Download</button>
+    <button (click)="downloadIDCard()"><mat-icon>download</mat-icon>Print / Download</button>
 </div>

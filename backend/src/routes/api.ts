@@ -9,8 +9,8 @@ import { log } from 'console';
 
 const router = Router()
 
-async function generateQRCode(id: Number): Promise<string> {
-  const jsonString = JSON.stringify(id);
+async function generateQRCode(helper: {}): Promise<string> {
+  const jsonString = JSON.stringify(helper);
 
   try {
     const qrCodeDataUrl = await QRCode.toDataURL(jsonString);
@@ -75,7 +75,8 @@ router.post('/', async (req, res) => {
   helper.dateJoined = Date.now()
 
   if (helper.profilePic == null) helper.profilePic = ''
-  await generateQRCode(helper.employeeID).then((qr) => {
+
+  await generateQRCode(helper).then((qr) => {
     helper.employeeId_QR = qr
   })
   try {

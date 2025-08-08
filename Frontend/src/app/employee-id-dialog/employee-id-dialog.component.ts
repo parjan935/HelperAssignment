@@ -5,27 +5,27 @@ import { MatIcon } from '@angular/material/icon';
 
 
 
-export interface Helper {
+interface Helper {
   employeeID: number;
   name: string;
   email: string;
-  profilePic: string; 
+  profilePic: string;
   gender: string;
   phone: string;
-  languages: string[]; 
-  service: string; 
+  languages: string[];
+  service: string;
   organization: string;
-  vehicleType: string; 
-  kycDocx: string; 
-  employeeId_QR: string; 
-  dateJoined: string; 
+  vehicleType: string;
+  kycDocx: string;
+  employeeId_QR: string;
+  dateJoined: string;
 }
 
 
 @Component({
   selector: 'app-employee-id-dialog',
   standalone: true,
-  imports: [MatIcon,CommonModule,NgIf],
+  imports: [MatIcon, CommonModule, NgIf],
   templateUrl: './employee-id-dialog.component.html',
   styleUrl: './employee-id-dialog.component.scss',
   encapsulation: ViewEncapsulation.None
@@ -35,11 +35,7 @@ export class EmployeeIdDialogComponent {
 
   readonly helper = inject<Helper>(MAT_DIALOG_DATA);
 
-  ngOnInit() {
-    console.log(this.helper);
-  }
-
-  downloadID() {
+  downloadIDCard() {
     window.print()
   }
 
