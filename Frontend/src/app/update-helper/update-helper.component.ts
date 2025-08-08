@@ -62,7 +62,7 @@ export class UpdateHelperComponent {
       'maid'
     ],
     orgs: [
-      'springs helpers',
+      'Springs helpers',
       'ASBL'
     ],
     languages: [
