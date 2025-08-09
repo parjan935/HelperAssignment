@@ -8,20 +8,16 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormField, MatFormFieldModule, MatLabel } from "@angular/material/form-field";
 import { FormsModule } from '@angular/forms';
-import { MatOption } from '@angular/material/core';
 import { MatSelect } from '@angular/material/select';
-import axios from 'axios';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
-
 import { MAT_SNACK_BAR_DATA, MatSnackBar } from '@angular/material/snack-bar';
-
-
 import { MatDatepickerInputEvent, MatDatepickerModule } from '@angular/material/datepicker';
 import { MatInputModule } from '@angular/material/input';
-import { MatNativeDateModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOption } from '@angular/material/core';
 import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
 import { MatCardModule } from '@angular/material/card'
-
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ApiService } from '../api.service';
 
 interface Helper {
   _id?: string,
@@ -57,10 +53,12 @@ interface Helper {
     MatIconModule,
     MatButtonModule,
     MatCardModule,
-    MatNativeDateModule, FormsModule],
+    MatNativeDateModule, FormsModule, MatProgressSpinnerModule],
   templateUrl: './helpers.component.html',
   styleUrl: './helpers.component.scss'
 })
+
+
 export class HelpersComponent {
 
   inputOptions = {
@@ -76,36 +74,41 @@ export class HelpersComponent {
     ]
   }
 
-  constructor(private dialog: MatDialog) { }
+  constructor(private dialog: MatDialog, private api: ApiService) { }
+  private _snackBar = inject(MatSnackBar);
+
+  loadingHelpers = false
 
   helpers: Helper[] = []
   filteredHelpers: Helper[] = []
+  selectedHelper = this.helpers?.[0]
 
   ngOnInit() {
     this.getHelpers();
   }
 
+  /// Get Helpers
   getHelpers = async () => {
+    this.loadingHelpers = true
     try {
-      const response = await axios.get('http://localhost:4000/api/');
-      this.helpers = response.data
-      this.filteredHelpers = this.helpers
-      this.selectedHelper = this.filteredHelpers?.[0]
+      this.api.getHelpers().subscribe((response) => {
+        this.helpers = response
+        this.filteredHelpers = this.helpers
+        this.selectedHelper = this.filteredHelpers?.[0]
+      })
+
     } catch (error) {
       console.log(error);
     }
+    this.loadingHelpers = false
   }
 
   ///// Filtering & Sorting
-
-  openFilter = false
-
   sortFilter: string = 'name';
-  filterVal = {
-    service: '',
-    org: ''
-  }
   selectedDate: Date | null = null
+  openFilter = false
+  serviceFilter: string[] = []
+  organizationFilter: string[] = []
   searchVal: string = '';
 
   onDateChange(event: MatDatepickerInputEvent<Date>) {
@@ -122,51 +125,63 @@ export class HelpersComponent {
     this.selectedHelper = this.filteredHelpers?.[0]
   }
 
+  handleSearchChange() {
+    this.filterHelpers()
+  }
+
   applyFilter() {
-    this.filteredHelpers = this.helpers.filter((h) => {
-      return h.service.includes(this.filterVal.service) && h.organization.includes(this.filterVal.org)
-    })
-    this.openFilter = false
+    this.filterHelpers()
   }
 
   resetFilter() {
-    this.filterVal = {
-      service: '',
-      org: ''
+    this.serviceFilter = []
+    this.organizationFilter = []
+    this.filterHelpers()
+  }
+
+  selectOrDeselectAll(field: string) {
+    if (field == 'service') {
+      if (this.serviceFilter.length - 1 === this.inputOptions.services.length) this.serviceFilter = []
+      else this.serviceFilter = this.inputOptions.services
     }
-    this.filteredHelpers = this.helpers
-    this.openFilter = false
+    else {
+      if (this.organizationFilter.length - 1 === this.inputOptions.orgs.length) this.organizationFilter = []
+      else this.organizationFilter = this.inputOptions.orgs
+    }
   }
 
-  handleSearchChange() {
+  async filterHelpers() {
+    this.loadingHelpers = true
     this.selectedDate = null
-    this.filteredHelpers = this.helpers.filter((helper) => {
-      return helper?.name.toLocaleLowerCase().includes(this.searchVal.toLocaleLowerCase())
-    })
-    if (this.sortFilter == 'ID') this.sortByID();
-    if (this.sortFilter == 'name') this.sortByName();
-
-
-    this.selectedHelper = this.filteredHelpers?.[0]
-  }
-
-  sortByName() {
     this.sortFilter = 'name'
-    this.filteredHelpers = [...this.filteredHelpers].sort((a, b) => {
-      const h1 = a['name']?.toString().toLowerCase();
-      const h2 = b['name']?.toString().toLowerCase();
-      return h1.localeCompare(h2);
-    })
-  }
-  sortByID() {
-    this.sortFilter = 'ID'
-    this.filteredHelpers = [...this.filteredHelpers].sort((a, b) => {
-      const h1 = a['employeeID']?.toString().toLowerCase();
-      const h2 = b['employeeID']?.toString().toLowerCase();
-      return h1.localeCompare(h2);
-    })
+    const filter = { services: this.serviceFilter, orgs: this.organizationFilter, searchVal: this.searchVal }
+    try {
+      this.api.getHelpersByFilter(filter).subscribe((response) => {
+        this.helpers = response
+        this.filteredHelpers = this.helpers
+        this.selectedHelper = this.filteredHelpers?.[0]
+      })
+    } catch (error) {
+      console.log(error);
+    }
+    this.openFilter = false
+    this.loadingHelpers = false
   }
 
+  sortHelpersBy(key: 'name' | 'employeeID') {
+    console.log(key);
+
+    this.sortFilter = key;
+    this.filteredHelpers = this.filteredHelpers.sort((a, b) => {
+      const valA = a[key]?.toString().toLowerCase() || '';
+      const valB = b[key]?.toString().toLowerCase() || '';
+      return valA.localeCompare(valB);
+    });
+  }
+
+
+
+  /// Delete Helper
   deleteHelper() {
     const dialogRef = this.dialog.open(DeleteHelperDialog, { data: { name: this.selectedHelper.name, service: this.selectedHelper.service } })
     dialogRef.afterClosed().subscribe(result => {
@@ -180,7 +195,6 @@ export class HelpersComponent {
         })
 
         this.openSnackBar(`Deleted ${this.selectedHelper.name}`);
-
         this.selectedHelper = this.filteredHelpers?.[0]
       }
     })
@@ -188,21 +202,19 @@ export class HelpersComponent {
 
   delete = async () => {
     try {
-      await axios.delete(`http://localhost:4000/api/${this.selectedHelper._id}`)
+      this.api.deleteHelper(this.selectedHelper._id as string).subscribe((response) => { })
     } catch (error) {
       console.log(error);
     }
   }
 
-  selectedHelper = this.helpers?.[0]
-
-  private _snackBar = inject(MatSnackBar);
-
+  /// Snackbars
   openSnackBar(message: string) {
     this._snackBar.openFromComponent(CustomSnackBarComponent,
       { data: message, duration: 3000, verticalPosition: 'bottom', horizontalPosition: 'end', panelClass: ['no-default-style'] });
   }
 
+  /// Dialogs
   openEmployeeIdDialog() {
     const data = this.selectedHelper
     this.dialog.open(EmployeeIdDialogComponent, { data })
@@ -225,7 +237,6 @@ export class HelpersComponent {
 class DeleteHelperDialog {
   constructor(private dialogRef: MatDialogRef<DeleteHelperDialog>) { }
   readonly data = inject<{ name: string, service: string }>(MAT_DIALOG_DATA)
-  delete = false
 
   closeDialog() {
     this.dialogRef.close()

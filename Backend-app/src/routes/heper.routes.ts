@@ -11,6 +11,7 @@ router.post('/', helperController.createHelper)
 router.get('/:id', helperController.getHelperById)
 router.delete('/:id', helperController.deleteHelper)
 router.put('/:id', helperController.updateHelper)
+router.post('/getByFilter', helperController.getHelpersByFilters)
 
 export default router
 

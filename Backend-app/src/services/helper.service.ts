@@ -31,6 +31,22 @@ export class HelperServices {
         return sortedHelpers;
     }
 
+    async getHelpersByFilters(payload: any): Promise<IHelper[]> {
+        const { services, orgs, searchVal } = payload
+
+        const filter = []
+        if (services.length > 0) filter.push({ service: { $in: services } })
+        if (orgs.length > 0) filter.push({ organization: { $in: orgs } })
+        filter.push({ name: { $regex: searchVal, $options: 'i' } });
+        const helpers = await Helper.aggregate([{ $match: { $and: filter } }])
+        const sortedHelpers = [...helpers].sort((a, b) => {
+            const h1 = a['name']?.toString().toLowerCase();
+            const h2 = b['name']?.toString().toLowerCase();
+            return h1.localeCompare(h2);
+        })
+        return sortedHelpers
+    }
+
     async getHelperById(id: string): Promise<IHelper | null> {
         const helper = await Helper.findById(id);
         return helper
@@ -56,12 +72,10 @@ export class HelperServices {
     }
 
     async deleteHelper(id: string) {
-        console.log("delete - ", id);
         await Helper.findByIdAndDelete(id)
     }
 
     async updateHelper(id: string, helper: IHelper) {
-        
         await Helper.findByIdAndUpdate(id, helper)
     }
 }

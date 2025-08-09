@@ -11,9 +11,9 @@ import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
 import { FileInputDialogComponent } from '../file-input-dialog/file-input-dialog.component';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import axios from 'axios';
 import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
 
+import { ApiService } from '../api.service';
 
 @Component({
   selector: 'app-add-helper',
@@ -36,6 +36,8 @@ import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dia
   ],
 })
 export class AddHelperComponent implements OnInit {
+  constructor(private dialog: MatDialog, private router: Router, private api: ApiService) { }
+
 
   inputOptions = {
     services: [
@@ -174,7 +176,6 @@ export class AddHelperComponent implements OnInit {
   }
 
   /// Dialogs 
-  constructor(private dialog: MatDialog, private router: Router) { }
 
   kycDocName = ''
 
@@ -242,27 +243,27 @@ export class AddHelperComponent implements OnInit {
 
   addHelper = async () => {
     try {
-      const response = await axios.post('http://localhost:4000/api/', this.firstFormGroup.value)
+      this.api.createHelper(this.firstFormGroup.value).subscribe((response) => {
+        if (response.helper) {
 
-      if (response.statusText === "OK") {
-        this.helperData = response.data.helper
-        this.employeeID_QR = response.data.qr
-        this.employeeID = response.data.id
-        this.openVerifiedDialog()
-      }
-      else {
-        console.log(response.data.error);
-      }
+          this.helperData = response.helper
+          this.employeeID_QR = response.data.qr
+          this.employeeID = response.data.id
+          this.openVerifiedDialog()
+        }
+        else {
+          console.log(response);
+
+        }
+
+      })
+
     } catch (error) {
       console.log("error - ", error);
     }
   }
 
 }
-
-
-
-
 
 
 @Component({
@@ -283,3 +284,43 @@ class VerifiedDialog {
     }, 3000)
   }
 }
+
+
+// import { Component, OnInit } from '@angular/core';
+// import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
+// import { MatStepperModule } from '@angular/material/stepper';
+// import { MatFormFieldModule } from '@angular/material/form-field';
+// import { MatInputModule } from '@angular/material/input';
+// import { MatButtonModule } from '@angular/material/button';
+// import { CommonModule } from '@angular/common';
+
+// @Component({
+//   selector: 'app-add-helper',
+//   standalone: true,
+//   imports: [
+//     CommonModule,
+//     ReactiveFormsModule,
+//     MatStepperModule,
+//     MatFormFieldModule,
+//     MatInputModule,
+//     MatButtonModule,
+//   ],
+//   templateUrl: './add-helper.component.html',
+// })
+// export class AddHelperComponent implements OnInit {
+//   isLinear = true;
+//   firstFormGroup!: FormGroup;
+//   secondFormGroup!: FormGroup;
+
+//   constructor(private _formBuilder: FormBuilder) { }
+
+//   ngOnInit(): void {
+//     this.firstFormGroup = this._formBuilder.group({
+//       firstCtrl: ['', Validators.required],
+//     });
+
+//     this.secondFormGroup = this._formBuilder.group({
+//       secondCtrl: ['', Validators.required],
+//     });
+//   }
+// }
