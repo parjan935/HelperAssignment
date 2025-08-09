@@ -1,0 +1,134 @@
+<form class="step-form" [formGroup]="firstFormGroup" *ngSwitchCase="0" (ngSubmit)="handleSubmitForm1()">
+    <h2>Helper Details</h2>
+    <p>Track, Add and Manage all your helpers at one place</p>
+
+    <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
+        <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
+        <ng-template #noPhoto>
+            <mat-icon>cloud_upload</mat-icon>
+            Upload <br> Photo
+        </ng-template>
+    </label>
+    <span class="remove-img">
+        <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value; else noImage">
+            remove image
+        </span>
+        <ng-template #noImage> No image uploaded</ng-template>
+        <input type="file" accept="image/*" id="profile-pic" (change)="onImageSelected($event)" hidden>
+    </span>
+
+    <label for="service">Type of Service*</label>
+    <mat-form-field appearance="outline">
+        <mat-select placeholder="Select Type of Service" formControlName="service">
+            <div>
+                <input class="service-search" type="text" placeholder="Search for Services"
+                    (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                    (input)="filterServices(serviceFilter.value)" #serviceFilter>
+            </div>
+            <mat-option *ngFor="let s of filteredServices" [value]="s">{{s}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('service')?.hasError('required')">this filed is
+        mandatory*</span>
+
+    <label for="org">Organizatino Name*</label>
+    <mat-form-field appearance="outline">
+        <mat-select placeholder="Organizatino Name" formControlName="organization">
+            <mat-option *ngFor="let o of inputOptions.orgs" [value]="o">{{o}}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('organization')?.hasError('required')">this filed is
+        mandatory*</span>
+
+    <label for="name">Full Name*</label>
+    <mat-form-field appearance="outline">
+        <input matInput name="name" placeholder="Full Name" formControlName="name">
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('name')?.hasError('required')">this filed is mandatory*</span>
+
+    <label for="Languages">Languages*</label>
+    <mat-form-field appearance="outline">
+        <mat-select formControlName="languages" placeholder="Languages" multiple>
+            <mat-select-trigger>
+                {{ selectedLanguages[0] || '' }}
+                <span *ngIf="selectedLanguages.length > 1" class="example-additional-selection">
+                    (+{{ selectedLanguages.length - 1 }})
+                </span>
+            </mat-select-trigger>
+            <mat-option [value]=""
+                (click)="selectAndDeselectAllLanguages()">{{selectedLanguages.length===inputOptions.languages.length?'Deselect
+                All':'Select All'}} </mat-option>
+            <mat-option *ngFor="let l of inputOptions.languages" [value]="l">{{ l }}</mat-option>
+        </mat-select>
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('languages')?.hasError('required')">this filed is
+        mandatory*</span>
+
+    <label for="gender">Gender*</label>
+    <mat-radio-group name="gender" aria-label="Select an option" formControlName="gender">
+        <mat-radio-button value="Male">Male</mat-radio-button>
+        <mat-radio-button value="Female">Female</mat-radio-button>
+        <mat-radio-button value="Other">Other</mat-radio-button>
+    </mat-radio-group>
+    <span class="error" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
+
+    <label for="phone">Phone*</label>
+    <mat-form-field appearance="outline">
+        <input matInput type="tel" id="phone" maxlength="10" (keypress)="validate($event)" placeholder="Enter phone"
+            formControlName="phone">
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('phone')?.hasError('required')">this filed is mandatory*</span>
+    <span class="error" *ngIf="formSubmitted && get('phone')?.value !=='' && get('phone')?.invalid">invalid mobile
+        number</span>
+
+    <label for="email">Email*</label>
+    <mat-form-field appearance="outline">
+        <input matInput placeholder="Enter email" formControlName="email">
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && (get('email')?.hasError('required'))">this filed is
+        mandatory*</span>
+    <span class="error" *ngIf="formSubmitted && (get('email')?.value!='') && (get('email')?.invalid)">Invalid
+        email*</span>
+
+    <label for="vehicle">Choose vehicle type*</label>
+    <mat-form-field appearance="outline">
+        <mat-select placeholder="select veichle type" formControlName="vehicleType">
+            <mat-option [value]="0">None</mat-option>
+            @for(vt of inputOptions.vehicleTypes; track vt){
+            <mat-option [value]="vt">{{vt}}</mat-option>
+            }
+        </mat-select>
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
+        mandatory*</span>
+
+    <label *ngIf="get('vehicleType')?.value" for="vehicleNo.">Vehicle Number*</label>
+    <mat-form-field *ngIf="get('vehicleType')?.value" appearance="outline">
+        <input matInput placeholder="TS08HR1342" formControlName="vehicleNo">
+    </mat-form-field>
+    <span class="error" *ngIf="formSubmitted && (get('vehicleNo')?.hasError('required'))">this filed is
+        mandatory*</span>
+
+    <label>KYC Document*</label>
+    <div *ngIf="kycDocName else uploadKYC" class="kyc-docx">
+        <mat-icon class="desc-icon">description</mat-icon>
+        <p *ngIf="kycDocName">
+            {{kycDocName}}</p>
+        <mat-icon (click)="removeKycDocx()" class="delete-icon">delete</mat-icon>
+    </div>
+
+    <ng-template #uploadKYC>
+        <div class="profile-pic kyc-docx-upload" matButton="elevated" (click)="openKycDocxDialog()">
+            <mat-icon>add</mat-icon>
+        </div>
+    </ng-template>
+    <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
+        kyc Document is mandatory*
+    </span>
+
+    <div class="nav-btns">
+        <button matButton (click)="stepper.next()">
+            Next <mat-icon>chevron_right</mat-icon>
+        </button>
+    </div>
+</form>

@@ -4,277 +4,255 @@
   </a>
 </div>
 
-<mat-stepper class="stepper" [linear]="true" #stepper>
-  <mat-step class="step" [stepControl]="firstFormGroup">
-    <ng-template matStepLabel>Helper Details</ng-template>
-    <form class="step-form" [formGroup]="firstFormGroup" (ngSubmit)="handleSubmitForm1()">
-      <h1>Helper Details</h1>
-      <p>Track, Add and Manage all your helpers at one place</p>
-
-      <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
-        <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
-        <ng-template #noPhoto>
-          <mat-icon>upload</mat-icon>
-          Upload <br> Photo
-        </ng-template>
-      </label>
-      <span style="margin-bottom: 30px;">
-        <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value; else noImage"
-          style="font-size: small; background-color: rgb(235, 235, 235); padding: 8px; border-radius: 10px; cursor: pointer;">remove
-          image</span>
-        <ng-template #noImage> No image uploaded</ng-template>
-        <input type="file" accept="image/*" id="profile-pic" (change)="onImageSelected($event)" hidden>
-      </span>
-
-      <label for="service">Type of Service*</label>
-      <mat-form-field appearance="outline">
-        <mat-select placeholder="Select Type of Service" formControlName="service">
-          <div>
-            <input class="service-search" type="text" placeholder="Search for Services"
-              (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
-              (input)="filterServices(serviceFilter.value)" #serviceFilter>
-          </div>
-          <mat-option *ngFor="let s of filteredServices" [value]="s">{{s}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('service')?.hasError('required')">this filed is
-        mandatory*</span>
-
-      <label for="org">Organizatino Name*</label>
-      <mat-form-field appearance="outline">
-        <mat-select placeholder="Organizatino Name" formControlName="organization">
-          <mat-option *ngFor="let o of inputOptions.orgs" [value]="o">{{o}}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('organization')?.hasError('required')">this filed is
-        mandatory*</span>
-
-      <label for="name">Full Name*</label>
-      <mat-form-field appearance="outline">
-        <input matInput name="name" placeholder="Full Name" formControlName="name">
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('name')?.hasError('required')">this filed is mandatory*</span>
-
-      <label for="Languages">Languages*</label>
-      <mat-form-field appearance="outline">
-        <mat-select formControlName="languages" placeholder="Languages" multiple>
-          <mat-select-trigger>
-            {{ selectedLanguages[0] || '' }}
-            <span *ngIf="selectedLanguages.length > 1" class="example-additional-selection">
-              (+{{ selectedLanguages.length - 1 }})
-            </span>
-          </mat-select-trigger>
-          <mat-option [value]=""
-            (click)="selectAndDeselectAllLanguages()">{{selectedLanguages.length===inputOptions.languages.length?'Deselect
-            All':'Select All'}} </mat-option>
-          <mat-option *ngFor="let l of inputOptions.languages" [value]="l">{{ l }}</mat-option>
-        </mat-select>
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('languages')?.hasError('required')">this filed is
-        mandatory*</span>
-
-      <label for="gender">Gender*</label>
-      <mat-radio-group name="gender" aria-label="Select an option" formControlName="gender">
-        <mat-radio-button value="Male">Male</mat-radio-button>
-        <mat-radio-button value="Female">Female</mat-radio-button>
-        <mat-radio-button value="Other">Other</mat-radio-button>
-      </mat-radio-group>
-      <span class="error" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
-
-      <label for="phone">Phone*</label>
-      <mat-form-field appearance="outline">
-        <input matInput type="tel" id="phone" maxlength="10" (keypress)="validate($event)" placeholder="Enter phone"
-          formControlName="phone">
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('phone')?.hasError('required')">this filed is mandatory*</span>
-      <span class="error" *ngIf="formSubmitted && get('phone')?.value !=='' && get('phone')?.invalid">invalid mobile
-        number</span>
-
-      <label for="email">Email*</label>
-      <mat-form-field appearance="outline">
-        <input matInput placeholder="Enter email" formControlName="email">
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && (get('email')?.hasError('required'))">this filed is mandatory*</span>
-      <span class="error" *ngIf="formSubmitted && (get('email')?.value!='') && (get('email')?.invalid)">Invalid
-        email*</span>
-
-      <label for="vehicle">Choose vehicle type*</label>
-      <mat-form-field appearance="outline">
-        <mat-select placeholder="select veichle type" formControlName="vehicleType">
-          <mat-option [value]="0">None</mat-option>
-          @for(vt of inputOptions.vehicleTypes; track vt){
-          <mat-option [value]="vt">{{vt}}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
-        mandatory*</span>
-
-      <label *ngIf="get('vehicleType')?.value" for="vehicleNo.">Vehicle Number*</label>
-      <mat-form-field *ngIf="get('vehicleType')?.value" appearance="outline">
-        <input matInput placeholder="TS08HR1342" formControlName="vehicleNo">
-      </mat-form-field>
-      <span class="error" *ngIf="formSubmitted && (get('vehicleNo')?.hasError('required'))">this filed is
-        mandatory*</span>
-
-      <label>KYC Document*</label>
-      <div *ngIf="kycDocName else upload"
-        style="display: flex; margin-top: 10px; background-color: rgb(239, 239, 239); border-radius: 10px; width: fit-content;">
-        <mat-icon
-          style="color: rgb(254, 91, 91); width: fit-content; height: fit-content; font-size: 70px; ">description</mat-icon>
-        <p style="font-size: small; margin: 15px 15px 15px 10px;  align-self: flex-end; width: 60%;" *ngIf="kycDocName">
-          {{kycDocName}}</p>
-        <mat-icon (click)="removeKycDocx()"
-          style="font-size: xx-large; margin: auto 10px auto 20px;
-           align-self: flex-end; color: red; width: fit-content; height: fit-content; cursor: pointer;">delete</mat-icon>
-      </div>
-      <ng-template #upload>
-        <div class="profile-pic kyc-docx" matButton="elevated" (click)="openKycDocxDialog()">
-          <mat-icon>add</mat-icon>
-        </div>
-      </ng-template>
-      <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
-        kyc Document is mandatory*
-      </span>
-
-
-      <div class="nav-btns">
-        <button matButton matStepperNext>Next <mat-icon>chevron_right</mat-icon>
-        </button>
-      </div>
-    </form>
-  </mat-step>
-
-  <mat-step [stepControl]="secondFormGroup" aria-disabled="true">
-    <ng-template matStepLabel>Documents</ng-template>
-
-    <form class="step-form" [formGroup]="secondFormGroup">
-      <h1>Additional Documents</h1>
-      <p>Upload related documents (Optional).</p>
-      <div class="profile-pic kyc-docx" matButton="elevated" (click)="openAdditionalDocxDialog()">
-        <mat-icon>add</mat-icon>
-      </div>
-      <p style="font-size: small;" *ngIf="additionalDocName">Selected : {{additionalDocName}}</p>
-
-
-      <hr>
-      <div class="nav-btns">
-        <button matButton matStepperPrevious> <mat-icon>chevron_left</mat-icon>Previous</button>
-        <button matButton matStepperNext>Next <mat-icon>chevron_right</mat-icon></button>
-      </div>
-    </form>
-  </mat-step>
-
-
-  <mat-step>
-    <ng-template matStepLabel>Review</ng-template>
-    <div class="final-step">
-      <div class="final-step-profile">
-        <img
-          [src]="get('profilePic')?.value || 'https://ui-avatars.com/api/?name=' + firstFormGroup.get('name')?.value + '&background=random&color=fff&rounded=true&length=2'"
-          alt="Profile Photo" />
-        <div>
-          <h3>{{firstFormGroup.get('name')?.value}}</h3>
-          <span style="color: rgb(143, 143, 143);">{{firstFormGroup.get('service')?.value}}</span>
-        </div>
-      </div>
-      <div>
-        <h3>Personal Details</h3>
-        <div class="final-step-details">
-          <table>
-            <tr>
-              <td>Gender</td>
-              <td>{{ firstFormGroup.get('gender')?.value }}</td>
-            </tr>
-            <tr>
-              <td>Languages</td>
-              <td>{{ firstFormGroup.get('languages')?.value }}</td>
-            </tr>
-            <tr>
-              <td>Mobile</td>
-              <td>{{ firstFormGroup.get('phone')?.value }}</td>
-            </tr>
-            <tr>
-              <td>Email</td>
-              <td>{{ firstFormGroup.get('email')?.value }}</td>
-            </tr>
-            <tr>
-              <td>KYC Document</td>
-              <td>----</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-      <div>
-        <h3>Service Details</h3>
-        <div class="final-step-details">
-          <table>
-            <tr>
-              <td>Type</td>
-              <td>{{ firstFormGroup.get('service')?.value }}</td>
-            </tr>
-            <tr>
-              <td>Organization</td>
-              <td>{{ firstFormGroup.get('organization')?.value }}</td>
-            </tr>
-            <tr>
-              <td>Joined On</td>
-              <td>{{ currDate | date:'mediumDate' }}</td>
-            </tr>
-          </table>
-        </div>
-      </div>
-    </div>
-    <div class="nav-btns">
-      <button matButton matStepperPrevious><mat-icon>chevron_left</mat-icon> Previous</button>
-      <button matButtonn (click)="addHelper()"> <mat-icon>add</mat-icon> Add Helper</button>
-    </div>
-  </mat-step>
-
-</mat-stepper>
-
-
-
-
-<!-- 
 
 <div class="stepper-container">
   <mat-vertical-stepper [linear]="'true'" #stepper class="stepper">
-    <mat-step [stepControl]="firstFormGroup" label="Name"></mat-step>
-    <mat-step [stepControl]="secondFormGroup" label="Address"></mat-step>
-    <mat-step label="Done"></mat-step>
+    <mat-step [stepControl]="firstFormGroup">
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <h3 class="step-title">Helper Details</h3>
+          <h5 class="step-subtitle">Add helper details</h5>
+        </div>
+      </ng-template>
+    </mat-step>
+    <mat-step [stepControl]="secondFormGroup">
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <h3 class="step-title">Documents</h3>
+          <h5 class="step-subtitle">Upload related documents</h5>
+        </div>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>
+        <div class="step-label">
+          <h3 class="step-title">Review</h3>
+          <h5 class="step-subtitle">Check the information and confirm</h5>
+        </div>
+      </ng-template>
+    </mat-step>
   </mat-vertical-stepper>
 
   <div class="step-content">
     <ng-container [ngSwitch]="stepper.selectedIndex">
-      <form [formGroup]="firstFormGroup" *ngSwitchCase="0">
-        <mat-form-field>
-          <mat-label>Name</mat-label>
-          <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+      <form class="step-form" [formGroup]="firstFormGroup" *ngSwitchCase="0" (ngSubmit)="handleSubmitForm1()">
+        <h2>Helper Details</h2>
+        <p>Track, Add and Manage all your helpers at one place</p>
+
+        <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
+          <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
+          <ng-template #noPhoto>
+            <mat-icon>cloud_upload</mat-icon>
+            Upload <br> Photo
+          </ng-template>
+        </label>
+        <span class="remove-img">
+          <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value; else noImage">
+            remove image
+          </span>
+          <ng-template #noImage> No image uploaded</ng-template>
+          <input type="file" accept="image/*" id="profile-pic" (change)="onImageSelected($event)" hidden>
+        </span>
+
+        <label for="service">Type of Service*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="Select Type of Service" formControlName="service">
+            <div>
+              <input class="service-search" type="text" placeholder="Search for Services"
+                (click)="$event.stopPropagation()" (keydown)="$event.stopPropagation()"
+                (input)="filterServices(serviceFilter.value)" #serviceFilter>
+            </div>
+            <mat-option *ngFor="let s of filteredServices" [value]="s">{{s}}</mat-option>
+          </mat-select>
         </mat-form-field>
-        <div>
-          <button mat-button (click)="stepper.next()">Next</button>
+        <span class="error" *ngIf="formSubmitted && get('service')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label for="org">Organizatino Name*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="Organizatino Name" formControlName="organization">
+            <mat-option *ngFor="let o of inputOptions.orgs" [value]="o">{{o}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('organization')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label for="name">Full Name*</label>
+        <mat-form-field appearance="outline">
+          <input matInput name="name" placeholder="Full Name" formControlName="name">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('name')?.hasError('required')">this filed is mandatory*</span>
+
+        <label for="Languages">Languages*</label>
+        <mat-form-field appearance="outline">
+          <mat-select formControlName="languages" placeholder="Languages" multiple>
+            <mat-select-trigger>
+              {{ selectedLanguages[0] || '' }}
+              <span *ngIf="selectedLanguages.length > 1" class="example-additional-selection">
+                (+{{ selectedLanguages.length - 1 }})
+              </span>
+            </mat-select-trigger>
+            <mat-option [value]=""
+              (click)="selectAndDeselectAllLanguages()">{{selectedLanguages.length===inputOptions.languages.length?'Deselect
+              All':'Select All'}} </mat-option>
+            <mat-option *ngFor="let l of inputOptions.languages" [value]="l">{{ l }}</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('languages')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label for="gender">Gender*</label>
+        <mat-radio-group name="gender" aria-label="Select an option" formControlName="gender">
+          <mat-radio-button value="Male">Male</mat-radio-button>
+          <mat-radio-button value="Female">Female</mat-radio-button>
+          <mat-radio-button value="Other">Other</mat-radio-button>
+        </mat-radio-group>
+        <span class="error" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
+
+        <label for="phone">Phone*</label>
+        <mat-form-field appearance="outline">
+          <input matInput type="tel" id="phone" maxlength="10" (keypress)="validate($event)" placeholder="Enter phone"
+            formControlName="phone">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('phone')?.hasError('required')">this filed is mandatory*</span>
+        <span class="error" *ngIf="formSubmitted && get('phone')?.value !=='' && get('phone')?.invalid">invalid mobile
+          number</span>
+
+        <label for="email">Email*</label>
+        <mat-form-field appearance="outline">
+          <input matInput placeholder="Enter email" formControlName="email">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && (get('email')?.hasError('required'))">this filed is
+          mandatory*</span>
+        <span class="error" *ngIf="formSubmitted && (get('email')?.value!='') && (get('email')?.invalid)">Invalid
+          email*</span>
+
+        <label for="vehicle">Choose vehicle type*</label>
+        <mat-form-field appearance="outline">
+          <mat-select placeholder="select veichle type" formControlName="vehicleType">
+            <mat-option [value]="0">None</mat-option>
+            @for(vt of inputOptions.vehicleTypes; track vt){
+            <mat-option [value]="vt">{{vt}}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && get('vehicleType')?.hasError('required')">this filed is
+          mandatory*</span>
+
+        <label *ngIf="get('vehicleType')?.value" for="vehicleNo.">Vehicle Number*</label>
+        <mat-form-field *ngIf="get('vehicleType')?.value" appearance="outline">
+          <input matInput placeholder="TS08HR1342" formControlName="vehicleNo">
+        </mat-form-field>
+        <span class="error" *ngIf="formSubmitted && (get('vehicleNo')?.hasError('required'))">this filed is
+          mandatory*</span>
+
+        <label>KYC Document*</label>
+        <div *ngIf="kycDocName else uploadKYC" class="kyc-docx">
+          <mat-icon class="desc-icon">description</mat-icon>
+          <p *ngIf="kycDocName">
+            {{kycDocName}}</p>
+          <mat-icon (click)="removeKycDocx()" class="delete-icon">delete</mat-icon>
+        </div>
+
+        <ng-template #uploadKYC>
+          <div class="profile-pic kyc-docx-upload" matButton="elevated" (click)="openKycDocxDialog()">
+            <mat-icon>add</mat-icon>
+          </div>
+        </ng-template>
+        <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
+          kyc Document is mandatory*
+        </span>
+
+        <div class="nav-btns">
+          <button matButton (click)="stepper.next()">
+            Next <mat-icon>chevron_right</mat-icon>
+          </button>
         </div>
       </form>
 
-      <form [formGroup]="secondFormGroup" *ngSwitchCase="1">
-        <mat-form-field>
-          <mat-label>Address</mat-label>
-          <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY" required>
-        </mat-form-field>
-        <div>
-          <button mat-button (click)="stepper.previous()">Back</button>
-          <button mat-button (click)="stepper.next()">Next</button>
+      <form class="step-form" [formGroup]="secondFormGroup" *ngSwitchCase="1">
+        <h1>Additional Documents</h1>
+        <p>Upload related documents (Optional).</p>
+        <div *ngIf="additionalDocName else uploadAdditional" class="kyc-docx">
+          <mat-icon class="desc-icon">description</mat-icon>
+          <p *ngIf="additionalDocName">
+            {{additionalDocName}}</p>
+          <mat-icon (click)="removeKycDocx()" class="delete-icon">delete</mat-icon>
+        </div>
+        <ng-template #uploadAdditional>
+          <div class="profile-pic kyc-docx-upload" matButton="elevated" (click)="openAdditionalDocxDialog()">
+            <mat-icon>add</mat-icon>
+          </div>
+        </ng-template>
+        <div class="nav-btns">
+          <button matButton (click)="stepper.previous()"> <mat-icon>chevron_left</mat-icon>Previous</button>
+          <button matButton (click)="stepper.next()">Next <mat-icon>chevron_right</mat-icon></button>
         </div>
       </form>
 
       <div *ngSwitchCase="2">
-        <p>You are now done.</p>
-        <div>
-          <button mat-button (click)="stepper.previous()">Back</button>
-          <button mat-button (click)="stepper.reset()">Reset</button>
+        <div class="final-step">
+          <div class="final-step-profileDet">
+            <img
+              [src]="get('profilePic')?.value || 'https://ui-avatars.com/api/?name=' + firstFormGroup.get('name')?.value + '&background=random&color=fff&rounded=true&length=2'"
+              alt="Profile Photo" />
+            <div>
+              <h3>{{firstFormGroup.get('name')?.value}}</h3>
+              <span>{{firstFormGroup.get('service')?.value}}</span>
+            </div>
+          </div>
+          <div>
+            <h3>Personal Details</h3>
+            <div class="final-step-otherDet">
+              <table>
+                <tr>
+                  <td>Gender</td>
+                  <td>{{ firstFormGroup.get('gender')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>Languages</td>
+                  <td>{{ firstFormGroup.get('languages')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>Mobile</td>
+                  <td>{{ firstFormGroup.get('phone')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>Email</td>
+                  <td>{{ firstFormGroup.get('email')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>KYC Document</td>
+                  <td>----</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+          <div>
+            <h3>Service Details</h3>
+            <div class="final-step-otherDet">
+              <table>
+                <tr>
+                  <td>Type</td>
+                  <td>{{ firstFormGroup.get('service')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>Organization</td>
+                  <td>{{ firstFormGroup.get('organization')?.value }}</td>
+                </tr>
+                <tr>
+                  <td>Joined On</td>
+                  <td>{{ currDate | date:'mediumDate' }}</td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="nav-btns">
+          <button matButton (click)="stepper.previous()"><mat-icon>chevron_left</mat-icon> Previous</button>
+          <button matButtonn (click)="addHelper()"> <mat-icon>add</mat-icon> Add Helper</button>
         </div>
       </div>
     </ng-container>
   </div>
-</div> -->
+</div>

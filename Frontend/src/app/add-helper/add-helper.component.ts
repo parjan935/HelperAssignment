@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -20,7 +20,10 @@ import { ApiService } from '../api.service';
   standalone: true,
   templateUrl: './add-helper.component.html',
   styleUrl: './add-helper.component.scss',
-  imports: [RouterLink, RouterOutlet, MatButtonModule,
+  imports: [
+    RouterLink,
+    RouterOutlet,
+    MatButtonModule,
     MatStepperModule,
     FormsModule,
     ReactiveFormsModule,
@@ -36,7 +39,8 @@ import { ApiService } from '../api.service';
   ],
 })
 export class AddHelperComponent implements OnInit {
-  constructor(private dialog: MatDialog, private router: Router, private api: ApiService) { }
+  constructor(private dialog: MatDialog, private router: Router,
+    private api: ApiService, private fb: FormBuilder) { }
 
 
   inputOptions = {
@@ -82,25 +86,26 @@ export class AddHelperComponent implements OnInit {
   firstFormGroup!: FormGroup;
 
   ngOnInit(): void {
-    this.filteredServices = this.inputOptions.services
-    this.firstFormGroup = new FormGroup({
-      name: new FormControl('', [Validators.required]),
-      email: new FormControl('', [
+    this.filteredServices = this.inputOptions.services;
+
+    this.firstFormGroup = this.fb.group({
+      name: ['', Validators.required],
+      email: ['', [
         Validators.required,
-        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$'),
-      ]),
-      profilePic: new FormControl(''),
-      gender: new FormControl('', [Validators.required]),
-      phone: new FormControl('', [Validators.required, Validators.pattern("^[6-9][0-9]{9}$")]),
-      languages: new FormControl([], [Validators.required]),
-      service: new FormControl('', [Validators.required]),
-      organization: new FormControl('', [Validators.required]),
-      vehicleType: new FormControl('', [Validators.required]),
-      vehicleNo: new FormControl(''),
-      kycDocx: new FormControl('', [Validators.required])
+        Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
+      ]],
+      profilePic: [''],
+      gender: ['', Validators.required],
+      phone: ['', [Validators.required, Validators.pattern('^[6-9][0-9]{9}$')]],
+      languages: [[], Validators.required],
+      service: ['', Validators.required],
+      organization: ['', Validators.required],
+      vehicleType: ['', Validators.required],
+      vehicleNo: [''],
+      kycDocx: ['', Validators.required]
     });
 
-    this.firstFormGroup.get('vehicleType')!.valueChanges.subscribe(value => {
+    this.firstFormGroup.get('vehicleType')?.valueChanges.subscribe(value => {
       const vehicleNoControl = this.firstFormGroup.get('vehicleNo');
 
       if (value && value !== 'None') {
@@ -122,9 +127,9 @@ export class AddHelperComponent implements OnInit {
     }
   }
 
-  secondFormGroup = new FormGroup({
-    additionalDocx: new FormControl({}),
-  });
+  secondFormGroup = this.fb.group({
+    additionalDocx: [[]]
+  })
 
   imageBorder = 'dashed'
   isLinear = true;
@@ -147,6 +152,7 @@ export class AddHelperComponent implements OnInit {
       reader.readAsDataURL(file)
     }
   }
+  
   removeProfilePic() {
     this.firstFormGroup.get('profilePic')?.reset();
     this.imageBorder = 'dashed'
@@ -156,12 +162,13 @@ export class AddHelperComponent implements OnInit {
     this.kycDocName = ''
   }
 
-  /// Getters
-  get(key: string) {
-    return this.firstFormGroup.get(key)
-  }
+  /// Getter
   get selectedLanguages() {
     return this.firstFormGroup.get('languages')?.value || [];
+  }
+
+  get(key: string) {
+    return this.firstFormGroup.get(key)
   }
 
   selectAndDeselectAllLanguages() {
