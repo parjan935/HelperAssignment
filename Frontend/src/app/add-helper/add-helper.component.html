@@ -6,7 +6,7 @@
 
 
 <div class="stepper-container">
-  <mat-vertical-stepper [linear]="'false'" #stepper class="stepper">
+  <mat-vertical-stepper [linear]="'true'" #stepper class="stepper">
     <mat-step [stepControl]="firstFormGroup">
       <ng-template matStepLabel>
         <div class="step-label">
@@ -45,7 +45,7 @@
         <h1>Additional Documents</h1>
         <p>Upload related documents (Optional).</p>
 
-        <app-file-input-component type="multiple" [files]="get('additionalDocx')?.value"
+        <app-file-input-component [file]="get('additionalDocx')?.value"
           (fileSelected)="onFileChange($event)" (removeFile)="removeSelectedFile()"></app-file-input-component>
 
         <div class="nav-btns">

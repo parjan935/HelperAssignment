@@ -1,4 +1,4 @@
-import { Component, Inject, inject, Input, NgModule, OnChanges, SimpleChanges, ChangeDetectionStrategy } from '@angular/core';
+import { Component, Inject, inject, Input, NgModule, OnChanges, SimpleChanges, ChangeDetectionStrategy, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { RouterLink, RouterOutlet } from "@angular/router";
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIcon, MatIconModule } from "@angular/material/icon";
@@ -30,7 +30,8 @@ interface Helper {
   service: string;
   organization: string;
   vehicleType: string;
-  kycDocx: string;
+  kycDocx: { base64File: string, mimeType: string, fileName: string };
+  additionalDocx: { base64File: string, mimeType: string, fileName: string };
   employeeID: number;
   employeeId_QR: string;
   dateJoined: Date;
@@ -66,13 +67,30 @@ export class HelpersComponent {
       'Nurse',
       'Driver',
       'Cook',
-      'maid'
+      'Maid'
     ],
     orgs: [
       'Springs helpers',
       'ASBL'
     ]
   }
+  openFilter = false;
+
+  @ViewChild('popupRef') popupRef!: ElementRef;
+
+  togglePopup(event: MouseEvent) {
+    event.stopPropagation(); 
+    this.openFilter = !this.openFilter;
+  }
+
+  @HostListener('document:click', ['$event'])
+  onDocumentClick(event: MouseEvent) {
+    const clickedInside = this.popupRef?.nativeElement.contains(event.target);
+    if (!clickedInside && this.openFilter) {
+      this.openFilter = false;
+    }
+  }
+
 
   constructor(private dialog: MatDialog, private api: ApiService) { }
   private _snackBar = inject(MatSnackBar);
@@ -106,7 +124,6 @@ export class HelpersComponent {
   ///// Filtering & Sorting
   sortFilter: string = 'name';
   selectedDate: Date | null = null
-  openFilter = false
   serviceFilter: string[] = []
   organizationFilter: string[] = []
   searchVal: string = '';
@@ -170,7 +187,6 @@ export class HelpersComponent {
 
   sortHelpersBy(key: 'name' | 'employeeID') {
     console.log(key);
-
     this.sortFilter = key;
     this.filteredHelpers = this.filteredHelpers.sort((a, b) => {
       const valA = a[key]?.toString().toLowerCase() || '';
@@ -178,8 +194,6 @@ export class HelpersComponent {
       return valA.localeCompare(valB);
     });
   }
-
-
 
   /// Delete Helper
   deleteHelper() {
@@ -220,9 +234,21 @@ export class HelpersComponent {
     this.dialog.open(EmployeeIdDialogComponent, { data })
   }
 
-  openKycDocxDialog() {
-    /// 
+  viewKycDocx() {
+    const { base64File, mimeType, fileName } = this.selectedHelper.kycDocx
+    const file = { base64File, mimeType, fileName }
+    const blob = this.base64ToBlob(file.base64File, file.mimeType);
+    const url = URL.createObjectURL(blob);
+    window.open(url);
   }
+
+  base64ToBlob(base64: string, mime: string): Blob {
+    const byteCharacters = atob(base64);
+    const byteNumbers = Array.from(byteCharacters, c => c.charCodeAt(0));
+    const byteArray = new Uint8Array(byteNumbers);
+    return new Blob([byteArray], { type: mime });
+  }
+
 
 }
 

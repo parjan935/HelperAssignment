@@ -1,23 +1,54 @@
 .file-input-dialog {
     padding: 20px;
-    width: 400px;
+
+    width: 500px;
+    overflow: hidden;
+
+    mat-dialog-content {
+        display: flex;
+        flex-direction: column;
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 0.5px solid rgb(204, 204, 204);
+
+            mat-icon {
+                cursor: pointer;
+            }
+        }
+
+        .doc-type-label {
+            margin-top: 20px;
+        }
+
+        .error {
+            font-size: smaller;
+            color: red;
+            margin: -20px 0 10px 0
+        }
+    }
 }
+
+
 
 .doc-upload {
     display: flex;
-    justify-content:center ;
+    flex-direction: column;
+    justify-content: center;
     align-items: center;
-    width: 100%;
+    width: 99%;
     height: 150px;
     margin-top: 5px;
     border-radius: 10px;
     border-style: dashed;
-    background-color: rgb(227, 253, 240);
+    background-color: rgb(234, 230, 255);
     color: black;
     cursor: pointer;
 }
 
-mat-dialog-actions{
+mat-dialog-actions {
     display: flex;
     align-items: center;
     justify-content: end;

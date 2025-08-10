@@ -1,7 +1,7 @@
 import Helper from "../models/helper.model";
 import generateQRCode from "../utils/generateQR";
-
 export interface IHelper {
+
     name: string;
     profilePic?: string;
     email: string;
@@ -12,12 +12,14 @@ export interface IHelper {
     languages: string[];
     households?: number | null;
     employeeId_QR: string;
-    employeeID: number;
+    employeeID: Number;
     vehicleType: string;
-    kycDocx: string;
-    additonalDocx?: string[];
+    vehicleNo?: string;
+    kycDocx: {};
+    additionalDocx?: {};
     dateJoined?: Date | string;
 }
+
 
 
 export class HelperServices {
@@ -52,20 +54,38 @@ export class HelperServices {
         return helper
     }
 
-    async createHelper(helper: IHelper): Promise<IHelper> {
-        console.log(helper);
+
+    async createHelper(helper: IHelper, files?: { [fieldname: string]: globalThis.Express.Multer.File[] }): Promise<IHelper> {
+
+
+        let employeeID = 100
 
         const emp = await Helper.findOne()
             .sort({ employeeID: -1 })
             .select('employeeID');
-        const employeeID = emp?.employeeID as number;
-        helper.employeeID = employeeID + 1
+
+        if (emp) employeeID = emp.employeeID + 1
+        helper.employeeID = employeeID
 
         await generateQRCode(helper).then((qr) => {
             helper.employeeId_QR = qr
         })
 
         helper.dateJoined = new Date()
+
+        const kycFile = files?.kycDocx?.[0]
+        const additionalDocx = files?.additionalDocx?.[0]
+
+        helper.kycDocx = {
+            fileName: kycFile?.originalname,
+            mimeType: kycFile?.mimetype,
+            base64File: kycFile?.buffer.toString('base64'),
+        }
+        helper.additionalDocx = {
+            fileName: additionalDocx?.originalname,
+            mimeType: additionalDocx?.mimetype,
+            base64File: additionalDocx?.buffer.toString('base64'),
+        }
 
         const newHelper: IHelper = await new Helper(helper).save()
         return newHelper;
@@ -75,7 +95,28 @@ export class HelperServices {
         await Helper.findByIdAndDelete(id)
     }
 
-    async updateHelper(id: string, helper: IHelper) {
+    async updateHelper(id: string, helper: IHelper, files?: { [fieldname: string]: Express.Multer.File[] }) {
+        const kycFile = files?.kycDocx?.[0]
+        const additionalDocx = files?.additionalDocx?.[0]
+
+        if (kycFile) {
+            helper.kycDocx = {
+                fileName: kycFile?.originalname,
+                mimeType: kycFile?.mimetype,
+                base64File: kycFile?.buffer.toString('base64'),
+            }
+        }
+        console.log(additionalDocx);
+
+        if (additionalDocx) {
+            helper.additionalDocx = {
+                fileName: additionalDocx?.originalname,
+                mimeType: additionalDocx?.mimetype,
+                base64File: additionalDocx?.buffer.toString('base64'),
+            }
+        }
+        console.log(helper);
+
         await Helper.findByIdAndUpdate(id, helper)
     }
 }

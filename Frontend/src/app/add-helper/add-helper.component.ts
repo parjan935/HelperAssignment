@@ -67,7 +67,7 @@ export class AddHelperComponent implements OnInit {
       vehicleType: ['', Validators.required],
       vehicleNo: [''],
       kycDocx: [null, Validators.required],
-      additionalDocx: [[]]
+      additionalDocx: [null]
     });
 
     this.firstFormGroup.get('vehicleType')?.valueChanges.subscribe(value => {
@@ -87,14 +87,14 @@ export class AddHelperComponent implements OnInit {
   }
 
 
-  onFileChange(file: File) {
-    console.log(file);
+  onFileChange(file: any) {
+    this.get('additionalDocx')?.setValue(file?.file)
+    console.log(this.get('additionalDocx')?.value);
+
   }
   removeSelectedFile() {
-    console.log("in remove file");
-
+    this.get('additionalDocx')?.setValue(null)
   }
-
 
   openVerifiedDialog() {
     const dialogRef = this.dialog.open(VerifiedDialog)
@@ -135,8 +135,20 @@ export class AddHelperComponent implements OnInit {
   }
 
   addHelper = async () => {
+
+    const formData = new FormData();
+    Object.entries(this.firstFormGroup.value).forEach(([key, value]) => {
+      if (value instanceof File) {
+        formData.append(key, value);
+      } else if (typeof value === 'string') {
+        formData.append(key, value);
+      } else if (value !== null && value !== undefined) {
+        formData.append(key, value.toString());
+      }
+    })
+
     try {
-      this.api.createHelper(this.firstFormGroup.value).subscribe((response) => {
+      this.api.createHelper(formData).subscribe((response) => {
         if (response.helper) {
 
           this.newHelperData = response.helper

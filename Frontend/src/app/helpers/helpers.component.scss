@@ -227,3 +227,9 @@ mat-toolbar {
 ::ng-deep .mat-mdc-menu-item:hover {
   background-color: rgb(231, 230, 247) !important;
 }
+
+::ng-deep .mat-datepicker-content {
+  margin-top: 115px !important;
+  margin-left: 105px !important;
+  position: fixed !important;
+}

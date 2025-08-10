@@ -24,7 +24,7 @@ export class ApiService {
         return this.http.post(`${this.baseUrl}/getByFilter`, payload)
     }
 
-    createHelper(payload: any): Observable<any> {
+    createHelper(payload: FormData): Observable<any> {
         return this.http.post(`${this.baseUrl}`, payload);
     }
 
@@ -32,7 +32,7 @@ export class ApiService {
         return this.http.delete(`${this.baseUrl}/${id}`)
     }
 
-    updateHelper(payload: any, id: string): Observable<any> {
+    updateHelper(payload: FormData, id: string): Observable<any> {
         return this.http.put(`${this.baseUrl}/${id}`, payload)
     }
 }

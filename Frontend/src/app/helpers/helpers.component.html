@@ -13,16 +13,17 @@
           (click)="sortHelpersBy('name')">Helpers Names(A-Z) <mat-icon
             [style.display]="sortFilter=='name'?'':'none'">check</mat-icon> </button>
         <button mat-menu-item [style.backgroundColor]="sortFilter=='employeeID'?'rgb(231, 230, 247)':''"
-          (click)="sortHelpersBy('employeeID')">Employee ID <mat-icon [style.display]="sortFilter=='employeeID'?'':'none'">check</mat-icon>
+          (click)="sortHelpersBy('employeeID')">Employee ID <mat-icon
+            [style.display]="sortFilter=='employeeID'?'':'none'">check</mat-icon>
         </button>
       </mat-menu>
     </div>
 
     <div class="filter-by-servOrg">
-      <button (click)="openFilter=!openFilter">
+      <button (click)="togglePopup($event)">
         <mat-icon>filter_alt</mat-icon>
       </button>
-      <div [style.display]="openFilter?'flex':'none'">
+      <div #filterPopup *ngIf="openFilter">
         <mat-card class="example-card">
           <mat-card-header style="display: flex; justify-content: space-between; margin-bottom: 10px;">
             <mat-icon style="align-self: flex-end; cursor: pointer;" (click)="openFilter=false">close</mat-icon>
@@ -33,7 +34,8 @@
 
             <mat-form-field appearance="outline">
               <mat-select placeholder="Select Type of Service" [(ngModel)]="serviceFilter" multiple>
-                <mat-option (click)="selectOrDeselectAll('service')" [value]="'all'">{{serviceFilter.length===inputOptions.services.length?'Deselect
+                <mat-option (click)="selectOrDeselectAll('service')"
+                  [value]="'all'">{{serviceFilter.length===inputOptions.services.length?'Deselect
                   All':'Select All'}} </mat-option>
                 <mat-option *ngFor="let s of inputOptions.services" [value]="s">{{s}}</mat-option>
               </mat-select>
@@ -42,7 +44,8 @@
             <label for="org">Organizatino Name*</label>
             <mat-form-field appearance="outline">
               <mat-select placeholder="Organizatino Name" [(ngModel)]="organizationFilter" multiple>
-                <mat-option (click)="selectOrDeselectAll('organization')" [value]="'all'">{{organizationFilter.length===inputOptions.orgs.length?'Deselect
+                <mat-option (click)="selectOrDeselectAll('organization')"
+                  [value]="'all'">{{organizationFilter.length===inputOptions.orgs.length?'Deselect
                   All':'Select All'}} </mat-option>
                 <mat-option *ngFor="let o of inputOptions.orgs" [value]="o">{{o}}</mat-option>
               </mat-select>
@@ -60,7 +63,7 @@
 
     <div class="calendar">
       <input matInput [matDatepicker]="picker" (dateChange)="onDateChange($event)" [(ngModel)]="selectedDate" hidden>
-      <mat-datepicker #picker></mat-datepicker>
+      <mat-datepicker style="margin-top: 200px !important;" #picker></mat-datepicker>
       <button matButton (click)="picker.open()"> <mat-icon>event</mat-icon></button>
     </div>
 
@@ -158,7 +161,7 @@
               <span>{{ selectedHelper.languages }}</span>
               <span>{{ selectedHelper.phone }}</span>
               <span>{{ selectedHelper.email }}</span>
-              <span class="view-docx" (click)="openKycDocxDialog()">
+              <span class="view-docx" (click)="viewKycDocx()">
                 <mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon>
                 view
               </span>
@@ -192,115 +195,3 @@
     </div>
   </div>
 </div>
-
-
-<!-- 
-<mat-drawer-container class="example-container">
-  <mat-drawer *ngIf="!loadingHelpers" mode="side">
-
-    @for(helper of filteredHelpers; track helper){
-    <div class="helper" *ngIf="!loadingHelpers " (click)="selectedHelper=helper"
-      [ngStyle]="{'background-color':helper.name===selectedHelper.name ? 'rgb(231, 230, 247)':''}">
-      <img [src]="helper.profilePic " alt="Profile Photo" alt="Prifile Photo"
-        style="width: 50px; height: 50px; border-radius: 100%;">
-      <div>
-        <p>
-          {{helper.name}}
-        </p>
-        <span>{{helper.service}}</span>
-      </div>
-    </div>
-    }
-    <div *ngIf="!loadingHelpers && filteredHelpers.length==0 " style="text-align: center; padding-top: 40px;">
-      <p>No helpers to display.</p>
-      <p *ngIf="helpers.length==0">Click on Add Helper to add.</p>
-    </div>
-  </mat-drawer>
-  <mat-drawer-content>
-    <div>
-      <div *ngIf="selectedHelper!==undefined; else noHelpers" class="helper-details">
-        <div style="display: flex; align-items: center; justify-content: space-between;">
-          <div class="main-data">
-            <img style="width: 100px; height: 100px; border-radius: 100%;" [src]="selectedHelper.profilePic "
-              alt="Profile Photo" alt="Profile Photo" />
-            <div>
-              <p>{{ selectedHelper.name }}</p>
-              <span style="color: rgb(143, 143, 143);">{{ selectedHelper.service }}</span>
-            </div>
-          </div>
-          <div class="edit-delete-btns">
-            <button routerLink="edit-helper/{{selectedHelper._id}}"><mat-icon>edit</mat-icon></button>
-            <button (click)="deleteHelper()"> <mat-icon>delete</mat-icon></button>
-          </div>
-        </div>
-        <div>
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <h5 style="display: flex; width: fit-content; color: gray;">EMPLOYEE ID</h5>
-            <span style="flex: 1; border: 0.5px solid rgb(234, 234, 234); height: 0;"></span>
-          </div>
-          <div class="other-data">
-            <div>
-              <span>Identification Card</span>
-              <span>Employee Code</span>
-            </div>
-            <div>
-              <span class="view-docx" (click)="openEmployeeIdDialog()">
-                <mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon>
-                view
-              </span>
-              <span>{{selectedHelper.employeeID}}</span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <h5 style="display: flex; width: fit-content;  color: gray;">PERSONAL DETAILS</h5>
-            <span style="flex: 1; border: 0.5px solid rgb(234, 234, 234); height: 0;"></span>
-          </div>
-          <div class="other-data">
-            <div>
-              <span>Gender</span>
-              <span>Languages</span>
-              <span>Mobile</span>
-              <span>Email</span>
-              <span>KYC Document</span>
-            </div>
-            <div>
-              <span>{{ selectedHelper.gender }}</span>
-              <span>{{ selectedHelper.languages }}</span>
-              <span>{{ selectedHelper.phone }}</span>
-              <span>{{ selectedHelper.email }}</span>
-              <span class="view-docx" (click)="openKycDocxDialog()">
-                <mat-icon style="font-size: large; width: fit-content; height: fit-content;">visibility</mat-icon>
-                view
-              </span>
-            </div>
-          </div>
-        </div>
-        <div>
-          <div style="display: flex; align-items: center; gap: 15px;">
-            <h5 style="display: flex; width: fit-content;  color: gray;">SERVICE DETAILS</h5>
-            <span style="flex: 1; border: 0.5px solid rgb(234, 234, 234); height: 0;"></span>
-          </div>
-          <div class="other-data">
-            <div>
-              <span>Type</span>
-              <span>Organization</span>
-              <span>Joined On</span>
-            </div>
-            <div>
-              <span>{{ selectedHelper.service }}</span>
-              <span>{{ selectedHelper.organization }}</span>
-              <span>{{selectedHelper.dateJoined | date: 'longDate'}}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-      <ng-template #noHelpers>
-        <div style="display: flex; height: 100%; justify-content: center; padding-top: 40px;">
-          <p>Select a helper to diaplay.</p>
-        </div>
-      </ng-template>
-    </div>
-  </mat-drawer-content>
-</mat-drawer-container> -->

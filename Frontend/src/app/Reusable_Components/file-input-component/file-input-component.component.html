@@ -1,10 +1,8 @@
-<div *ngIf="type==='multiple' || DocNames.length===0" class="profile-pic kyc-docx-upload" matButton="elevated"
-    (click)="opeDocxInputDialog()">
+<div *ngIf="!DocName" class="profile-pic kyc-docx-upload" matButton="elevated" (click)="opeDocxInputDialog()">
     <mat-icon>add</mat-icon>
 </div>
-<div *ngFor="let DocName of DocNames; let i = index" class="kyc-docx">
+<div *ngIf="DocName" class="kyc-docx">
     <mat-icon class="desc-icon">description</mat-icon>
-    <p *ngIf="DocName">
-        {{DocName}}</p>
-    <mat-icon (click)="removeKycDocx(i)" class="delete-icon">delete</mat-icon>
+    <p> {{DocName}}</p>
+    <mat-icon (click)="removeKycDocx()" class="delete-icon">delete</mat-icon>
 </div>

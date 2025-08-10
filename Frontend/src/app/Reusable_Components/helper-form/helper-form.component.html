@@ -11,7 +11,7 @@
         </ng-template>
     </label>
     <span class="remove-img">
-        <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value; else noImage">
+        <span (click)="removeProfilePic()" *ngIf="get('profilePic')?.value && !get('profilePic')?.value.startsWith('https://ui-avatars.com'); else noImage">
             remove image
         </span>
         <ng-template #noImage> No image uploaded</ng-template>
@@ -71,7 +71,7 @@
         <mat-radio-button value="Female">Female</mat-radio-button>
         <mat-radio-button value="Other">Other</mat-radio-button>
     </mat-radio-group>
-    <span class="error" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
+    <span class="error" style="margin-top: 10px;" *ngIf="formSubmitted && get('gender')?.hasError('required')">this filed is mandatory*</span>
 
     <label for="phone">Phone*</label>
     <mat-form-field appearance="outline">
@@ -113,11 +113,11 @@
 
     <label>KYC Document*</label>
 
-    <app-file-input-component type="single" [files]="[get('kycDocx')?.value]" (fileSelected)="onFileChange($event)"
+    <app-file-input-component [file]="get('kycDocx')?.value" (fileSelected)="onFileChange($event)"
         (removeFile)="removeSelectedFile()">
     </app-file-input-component>
 
-    <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
+    <span class="error" style="margin-top: 10px;" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
         kyc Document is mandatory*
     </span>
 

@@ -45,22 +45,13 @@ export class FileInputDialogComponent {
 
   fileType = ''
   pdfFile: File | null = null;
-  pdfUrl: string | null = null;
 
-  onFileSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-
-      if (file.type === 'application/pdf') {
-        this.pdfFile = file;
-        this.pdfUrl = URL.createObjectURL(file);
-      } else {
-        console.warn('Please upload a valid PDF file.');
-      }
-
-      
+  onFileSelected(event: any): void {
+    const file = event.target?.files[0]
+    if (file.type === 'application/pdf') {
+      this.pdfFile = file;
+    } else {
+      console.warn('Please upload a valid PDF file.');
     }
   }
 
@@ -68,17 +59,16 @@ export class FileInputDialogComponent {
     this.dialogRef.close();
   }
 
-  showError=false
+  showError = false
 
   saveData(): void {
-    if(!this.pdfFile || !this.pdfUrl || !this.fileType){
-      this.showError=true
+    if (!this.pdfFile || !this.fileType) {
+      this.showError = true
       return;
     }
     const result = {
       fileType: this.fileType,
       file: this.pdfFile,
-      fileUrl: this.pdfUrl
     }
     this.dialogRef.close(result);
   }

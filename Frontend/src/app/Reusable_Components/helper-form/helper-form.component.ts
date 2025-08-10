@@ -47,7 +47,7 @@ export class HelperFormComponent {
       'Nurse',
       'Driver',
       'Cook',
-      'maid'
+      'Maid'
     ],
     orgs: [
       'Springs helpers',
@@ -119,15 +119,14 @@ export class HelperFormComponent {
   selectAndDeselectAllLanguages() {
     const result: string[] = this.selectedLanguages.length - 1 === this.inputOptions.languages.length ? [] : this.inputOptions.languages
     this.firstFormGroup?.get('languages')?.setValue(result)
-
   }
 
-  onFileChange(file: File) {
-    this.firstFormGroup?.get('kycDocx')?.setValue(file)
+  onFileChange(file: any) {
+    this.firstFormGroup?.get('kycDocx')?.setValue(file.file)
   }
 
   removeSelectedFile() {
-    this.firstFormGroup?.get('kycDocx')?.setValue('')
+    this.firstFormGroup?.get('kycDocx')?.setValue(null)
   }
 
 }

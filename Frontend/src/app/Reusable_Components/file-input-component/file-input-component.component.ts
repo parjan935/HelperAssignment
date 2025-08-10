@@ -5,6 +5,7 @@ import { NgFor, NgIf } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIcon } from '@angular/material/icon';
 
+
 @Component({
   selector: 'app-file-input-component',
   standalone: true,
@@ -17,32 +18,32 @@ export class FileInputComponentComponent {
   constructor(private dialog: MatDialog) { }
 
   @Input() type: string = ''
-  @Input() files: File[] = []
-  @Output() fileSelected = new EventEmitter<File>();
-  @Output() removeFile = new EventEmitter<void>();
+  @Input() file!: { base64File: string, mimeType: string, fileName: string };
+  @Output() fileSelected = new EventEmitter<any>();
+  @Output() removeFile = new EventEmitter<number>();
 
-  DocNames: string[] = []
+  DocName = ''
 
   ngOnInit() {
-    for (let i = 0; i < this.files.length; i++) {
-      const fName = this.files[i]?.name
-      if (fName) this.DocNames.push(fName)
-    }
+    this.DocName = this.file?.fileName
   }
-
 
   opeDocxInputDialog(): void {
     const dialogRef = this.dialog.open(FileInputDialogComponent, {});
     dialogRef.afterClosed().subscribe(result => {
       if (result !== undefined) {
-        this.DocNames.push(result?.file?.name)
-        this.fileSelected.emit(result?.file)
+        this.DocName = result?.file?.name
+        const fileData = {
+          file: result?.file,
+          fileType: result?.fileType
+        }
+        this.fileSelected.emit(fileData)
       }
     });
   }
 
-  removeKycDocx(index: number) {
-    this.DocNames.splice(index, 1)
+  removeKycDocx() {
+    this.DocName = ''
     this.removeFile.emit()
   }
 }
