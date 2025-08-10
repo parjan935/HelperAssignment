@@ -9,11 +9,13 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { CommonModule, NgFor, NgIf } from '@angular/common';
 import { MatIcon } from '@angular/material/icon';
-import { FileInputDialogComponent } from '../file-input-dialog/file-input-dialog.component';
+
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { EmployeeIdDialogComponent } from '../employee-id-dialog/employee-id-dialog.component';
 
 import { ApiService } from '../api.service';
+import { HelperFormComponent } from '../Reusable_Components/helper-form/helper-form.component';
+import { FileInputComponentComponent } from '../Reusable_Components/file-input-component/file-input-component.component';
 
 @Component({
   selector: 'app-add-helper',
@@ -36,58 +38,20 @@ import { ApiService } from '../api.service';
     NgFor,
     RouterLink,
     CommonModule,
+    HelperFormComponent,
+    FileInputComponentComponent
   ],
 })
 export class AddHelperComponent implements OnInit {
+
   constructor(private dialog: MatDialog, private router: Router,
     private api: ApiService, private fb: FormBuilder) { }
 
-
-  inputOptions = {
-    services: [
-      'Nurse',
-      'Driver',
-      'Cook',
-      'maid'
-    ],
-    orgs: [
-      'Springs helpers',
-      'ASBL'
-    ],
-    languages: [
-      'English',
-      'Telugu',
-      'Hindi',
-    ],
-    vehicleTypes: [
-      'Auto',
-      'Bike',
-      'Car'
-    ]
-  };
-
-  filteredServices: string[] = []
-
-  filterServices(s: string) {
-    this.filteredServices = this.inputOptions.services.filter((service) => {
-      return service.toLowerCase().includes(s.toLowerCase());
-    })
-  }
-
-  employeeID_QR: string = ''
-  employeeID: Number | null = null
-
-  helperData = {}
-
+  newHelperData = {}
   currDate = Date.now()
-
-  imageName = ''
-
   firstFormGroup!: FormGroup;
 
   ngOnInit(): void {
-    this.filteredServices = this.inputOptions.services;
-
     this.firstFormGroup = this.fb.group({
       name: ['', Validators.required],
       email: ['', [
@@ -102,7 +66,8 @@ export class AddHelperComponent implements OnInit {
       organization: ['', Validators.required],
       vehicleType: ['', Validators.required],
       vehicleNo: [''],
-      kycDocx: ['', Validators.required]
+      kycDocx: [null, Validators.required],
+      additionalDocx: [[]]
     });
 
     this.firstFormGroup.get('vehicleType')?.valueChanges.subscribe(value => {
@@ -113,118 +78,40 @@ export class AddHelperComponent implements OnInit {
       } else {
         vehicleNoControl?.clearValidators();
       }
-
       vehicleNoControl?.updateValueAndValidity();
     });
   }
 
-
-  validate(event: KeyboardEvent): void {
-    if (this.firstFormGroup.value.phone?.length == 10) return;
-    const isDigit = /^[0-9]$/.test(event.key);
-    if (!isDigit) {
-      event.preventDefault();
-    }
-  }
-
-  secondFormGroup = this.fb.group({
-    additionalDocx: [[]]
-  })
-
-  imageBorder = 'dashed'
-  isLinear = true;
-
-  formSubmitted = false
-
-  handleSubmitForm1() {
-    this.formSubmitted = true
-  }
-  onImageSelected(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    const file = input.files?.[0];
-    this.imageBorder = 'hidden'
-    if (file && file.type.startsWith('image/')) {
-      this.imageName = file.name
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.firstFormGroup.get('profilePic')?.setValue(reader.result as string);
-      };
-      reader.readAsDataURL(file)
-    }
-  }
-  
-  removeProfilePic() {
-    this.firstFormGroup.get('profilePic')?.reset();
-    this.imageBorder = 'dashed'
-  }
-  removeKycDocx() {
-    this.firstFormGroup.get('kycDocx')?.setValue('');
-    this.kycDocName = ''
-  }
-
-  /// Getter
-  get selectedLanguages() {
-    return this.firstFormGroup.get('languages')?.value || [];
-  }
-
   get(key: string) {
-    return this.firstFormGroup.get(key)
+    return this.firstFormGroup?.get(key)
   }
 
-  selectAndDeselectAllLanguages() {
-    console.log(this.selectedLanguages.length, this.inputOptions.languages.length);
-    console.log(this.selectedLanguages);
 
-    const result: string[] = this.selectedLanguages.length - 1 === this.inputOptions.languages.length ? [] : this.inputOptions.languages
-    this.firstFormGroup.get('languages')?.setValue(result)
-    console.log(result);
-    console.log(this.firstFormGroup.get('languages'));
+  onFileChange(file: File) {
+    console.log(file);
+  }
+  removeSelectedFile() {
+    console.log("in remove file");
 
   }
 
-  /// Dialogs 
 
-  kycDocName = ''
-
-  openKycDocxDialog(): void {
-    const dialogRef = this.dialog.open(FileInputDialogComponent, {
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        this.kycDocName = result?.file?.name
-        this.firstFormGroup.get('kycDocx')?.setValue(this.kycDocName);
-      }
-    });
-  }
-  additionalDocName = ''
-
-  openAdditionalDocxDialog(): void {
-    const dialogRef = this.dialog.open(FileInputDialogComponent, {});
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        this.additionalDocName = result?.file?.name
-        this.secondFormGroup.get('additionalDocx')?.setValue(result);
-      }
-    });
-  }
   openVerifiedDialog() {
     const dialogRef = this.dialog.open(VerifiedDialog)
     dialogRef.afterClosed().subscribe(() => {
       this.openEmployeeIdDialog()
     })
   }
+
   openEmployeeIdDialog(): void {
     const dialogRef = this.dialog.open(EmployeeIdDialogComponent,
       {
-        data: this.helperData
+        data: this.newHelperData
       })
     dialogRef.afterClosed().subscribe(() => {
       this.router.navigate(['/'])
     });
   }
-
-
-
 
   isFormGroupEmpty(formGroup: FormGroup): boolean {
     return Object.values(formGroup.controls).every(control => {
@@ -235,7 +122,6 @@ export class AddHelperComponent implements OnInit {
         (Array.isArray(value) && value.length === 0);
     });
   }
-
 
   goToHome() {
     if (this.isFormGroupEmpty(this.firstFormGroup)) {
@@ -253,18 +139,13 @@ export class AddHelperComponent implements OnInit {
       this.api.createHelper(this.firstFormGroup.value).subscribe((response) => {
         if (response.helper) {
 
-          this.helperData = response.helper
-          this.employeeID_QR = response.data.qr
-          this.employeeID = response.data.id
+          this.newHelperData = response.helper
           this.openVerifiedDialog()
         }
         else {
           console.log(response);
-
         }
-
       })
-
     } catch (error) {
       console.log("error - ", error);
     }
@@ -292,42 +173,3 @@ class VerifiedDialog {
   }
 }
 
-
-// import { Component, OnInit } from '@angular/core';
-// import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-// import { MatStepperModule } from '@angular/material/stepper';
-// import { MatFormFieldModule } from '@angular/material/form-field';
-// import { MatInputModule } from '@angular/material/input';
-// import { MatButtonModule } from '@angular/material/button';
-// import { CommonModule } from '@angular/common';
-
-// @Component({
-//   selector: 'app-add-helper',
-//   standalone: true,
-//   imports: [
-//     CommonModule,
-//     ReactiveFormsModule,
-//     MatStepperModule,
-//     MatFormFieldModule,
-//     MatInputModule,
-//     MatButtonModule,
-//   ],
-//   templateUrl: './add-helper.component.html',
-// })
-// export class AddHelperComponent implements OnInit {
-//   isLinear = true;
-//   firstFormGroup!: FormGroup;
-//   secondFormGroup!: FormGroup;
-
-//   constructor(private _formBuilder: FormBuilder) { }
-
-//   ngOnInit(): void {
-//     this.firstFormGroup = this._formBuilder.group({
-//       firstCtrl: ['', Validators.required],
-//     });
-
-//     this.secondFormGroup = this._formBuilder.group({
-//       secondCtrl: ['', Validators.required],
-//     });
-//   }
-// }

@@ -1,9 +1,10 @@
-<form class="step-form" [formGroup]="firstFormGroup" *ngSwitchCase="0" (ngSubmit)="handleSubmitForm1()">
+<form class="step-form" [formGroup]="firstFormGroup" (ngSubmit)="handleSubmitForm1()">
     <h2>Helper Details</h2>
     <p>Track, Add and Manage all your helpers at one place</p>
 
     <label class="profile-pic" [style.borderStyle]='imageBorder' for="profile-pic">
-        <img *ngIf=" get('profilePic')?.value; else noPhoto" [src]="get('profilePic')?.value" alt="Profile Photo" />
+        <img *ngIf=" get('profilePic')?.value && !get('profilePic')?.value.startsWith('https://ui-avatars.com'); else noPhoto"
+            [src]="get('profilePic')?.value" alt="Profile Photo" />
         <ng-template #noPhoto>
             <mat-icon>cloud_upload</mat-icon>
             Upload <br> Photo
@@ -109,26 +110,24 @@
     <span class="error" *ngIf="formSubmitted && (get('vehicleNo')?.hasError('required'))">this filed is
         mandatory*</span>
 
-    <label>KYC Document*</label>
-    <div *ngIf="kycDocName else uploadKYC" class="kyc-docx">
-        <mat-icon class="desc-icon">description</mat-icon>
-        <p *ngIf="kycDocName">
-            {{kycDocName}}</p>
-        <mat-icon (click)="removeKycDocx()" class="delete-icon">delete</mat-icon>
-    </div>
 
-    <ng-template #uploadKYC>
-        <div class="profile-pic kyc-docx-upload" matButton="elevated" (click)="openKycDocxDialog()">
-            <mat-icon>add</mat-icon>
-        </div>
-    </ng-template>
+    <label>KYC Document*</label>
+
+    <app-file-input-component type="single" [files]="[get('kycDocx')?.value]" (fileSelected)="onFileChange($event)"
+        (removeFile)="removeSelectedFile()">
+    </app-file-input-component>
+
     <span class="error" *ngIf="formSubmitted && get('kycDocx')?.hasError('required')">
         kyc Document is mandatory*
     </span>
 
     <div class="nav-btns">
-        <button matButton (click)="stepper.next()">
+        <button matButton *ngIf="usedFor=='addHelper'">
             Next <mat-icon>chevron_right</mat-icon>
+        </button>
+        <button matButton *ngIf="usedFor=='updateHelper'">
+            <mat-icon>update</mat-icon>
+            Update
         </button>
     </div>
 </form>

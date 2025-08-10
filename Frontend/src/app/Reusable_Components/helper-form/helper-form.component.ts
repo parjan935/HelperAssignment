@@ -1,19 +1,46 @@
-import { Component, Input } from '@angular/core';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
+import { FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { FileInputDialogComponent } from '../../file-input-dialog/file-input-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
+import { MatIcon } from '@angular/material/icon';
+import { MatStepperModule } from '@angular/material/stepper';
+import { MatButtonModule } from '@angular/material/button';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
+import { MatRadioModule } from '@angular/material/radio';
+import { CommonModule, NgFor, NgIf } from '@angular/common';
+import { RouterLink } from '@angular/router';
+import { FileInputComponentComponent } from '../file-input-component/file-input-component.component';
 
 @Component({
   selector: 'app-helper-form',
   standalone: true,
-  imports: [],
+  imports: [
+    ReactiveFormsModule,
+    MatButtonModule,
+    MatStepperModule,
+    FormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatRadioModule,
+    NgIf,
+    MatIcon,
+    NgFor,
+    RouterLink,
+    CommonModule,
+    FileInputComponentComponent],
   templateUrl: './helper-form.component.html',
   styleUrl: './helper-form.component.scss'
 })
 export class HelperFormComponent {
-  constructor(private dialog: MatDialog) { }
 
-  @Input() firstFormGroup: FormGroup | null = null
+  @Input() usedFor!: string
+  @Input() firstFormGroup!: FormGroup
+  @Output() formValid = new EventEmitter<void>()
+
+  constructor(private dialog: MatDialog) { }
 
   inputOptions = {
     services: [
@@ -37,10 +64,10 @@ export class HelperFormComponent {
       'Car'
     ]
   };
-  kycDocName = ''
+
   imageBorder = 'dashed'
   formSubmitted = false
-  filteredServices: string[] = []
+  filteredServices: string[] = this.inputOptions.services
 
   filterServices(s: string) {
     this.filteredServices = this.inputOptions.services.filter((service) => {
@@ -68,13 +95,12 @@ export class HelperFormComponent {
     this.firstFormGroup?.get('profilePic')?.reset();
     this.imageBorder = 'dashed'
   }
-  removeKycDocx() {
-    this.firstFormGroup?.get('kycDocx')?.setValue('');
-    this.kycDocName = ''
-  }
-
   handleSubmitForm1() {
     this.formSubmitted = true
+
+    if (this.firstFormGroup.valid) {
+      this.formValid.emit();
+    }
   }
 
   onImageSelected(event: Event): void {
@@ -90,15 +116,18 @@ export class HelperFormComponent {
     }
   }
 
-  openKycDocxDialog(): void {
-    const dialogRef = this.dialog.open(FileInputDialogComponent, {
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result !== undefined) {
-        this.kycDocName = result?.file?.name
-        // this.firstFormGroup?.get('kycDocx')?.setValue(result?.file);
-      }
-    });
+  selectAndDeselectAllLanguages() {
+    const result: string[] = this.selectedLanguages.length - 1 === this.inputOptions.languages.length ? [] : this.inputOptions.languages
+    this.firstFormGroup?.get('languages')?.setValue(result)
+
+  }
+
+  onFileChange(file: File) {
+    this.firstFormGroup?.get('kycDocx')?.setValue(file)
+  }
+
+  removeSelectedFile() {
+    this.firstFormGroup?.get('kycDocx')?.setValue('')
   }
 
 }

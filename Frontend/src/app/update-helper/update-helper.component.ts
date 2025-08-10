@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { ActivatedRoute, Router, RouterLink, RouterOutlet } from '@angular/router';
-import { Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl } from '@angular/forms';
+import { Validators, FormsModule, ReactiveFormsModule, FormGroup, FormControl, FormBuilder } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatStepperModule } from '@angular/material/stepper';
@@ -13,6 +13,7 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 import axios from 'axios';
+import { FileInputComponentComponent } from '../Reusable_Components/file-input-component/file-input-component.component';
 
 interface Helper {
   name: string;
@@ -43,7 +44,8 @@ interface Helper {
     NgFor,
     RouterLink,
     MatSidenavModule,
-    MatProgressSpinnerModule
+    MatProgressSpinnerModule,
+    FileInputComponentComponent
   ],
   templateUrl: './update-helper.component.html',
   styleUrl: './update-helper.component.scss'
@@ -79,42 +81,38 @@ export class UpdateHelperComponent {
 
 
   helper: Helper = {} as Helper;
-  firstFormGroup = new FormGroup({});
+  firstFormGroup!: FormGroup
   profilePicUrl = ''
 
   selected: 'helperDetails' | 'helperDocuments' = 'helperDetails';
 
-  constructor(private route: ActivatedRoute, private router: Router) { }
+  constructor(private route: ActivatedRoute, private router: Router, private fb: FormBuilder) { }
   helperID: string = ''
   ngOnInit() {
     this.helperLoading = true;
-
     this.helperID = this.route.snapshot.paramMap.get('helperID') as string
     this.getUser();
   }
 
   private getUser = async () => {
-
-
     try {
       const response = await axios.get(`http://localhost:4000/api/${this.helperID}`)
       this.helper = response.data
-
-      this.firstFormGroup.addControl('name', new FormControl(this.helper.name, [Validators.required]));
-      this.firstFormGroup.addControl('email',
-        new FormControl(this.helper.email, [
+      this.firstFormGroup = this.fb.group({
+        name: [this.helper.name, Validators.required],
+        email: [this.helper.email, [
           Validators.required,
           Validators.pattern('^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$')
-        ])
-      );
-      this.firstFormGroup.addControl('service', new FormControl(this.helper.service, [Validators.required]));
-      this.firstFormGroup.addControl('profilePic', new FormControl(this.helper.profilePic as string));
-      this.firstFormGroup.addControl('gender', new FormControl(this.helper.gender, [Validators.required]));
-      this.firstFormGroup.addControl('phone', new FormControl(this.helper.phone, [Validators.required]));
-      this.firstFormGroup.addControl('languages', new FormControl(this.helper.languages, [Validators.required]));
-      this.firstFormGroup.addControl('organization', new FormControl(this.helper.organization, [Validators.required]));
-      this.firstFormGroup.addControl('vehicleType', new FormControl(this.helper.vehicleType, [Validators.required]));
-      this.firstFormGroup.addControl('kycDocx', new FormControl(this.helper.kycDocx, [Validators.required]));
+        ]],
+        service: [this.helper.service, Validators.required],
+        profilePic: [this.helper.profilePic as string], // no validators
+        gender: [this.helper.gender, Validators.required],
+        phone: [this.helper.phone, Validators.required],
+        languages: [this.helper.languages, Validators.required],
+        organization: [this.helper.organization, Validators.required],
+        vehicleType: [this.helper.vehicleType, Validators.required],
+        kycDocx: [this.helper.kycDocx, Validators.required]
+      });
       this.profilePicUrl = this.helper.profilePic
 
     } catch (error) {
