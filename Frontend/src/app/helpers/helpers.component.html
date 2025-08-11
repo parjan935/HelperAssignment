@@ -63,7 +63,7 @@
 
     <div class="calendar">
       <input matInput [matDatepicker]="picker" (dateChange)="onDateChange($event)" [(ngModel)]="selectedDate" hidden>
-      <mat-datepicker style="margin-top: 200px !important;" #picker></mat-datepicker>
+      <mat-datepicker #picker></mat-datepicker>
       <button matButton (click)="picker.open()"> <mat-icon>event</mat-icon></button>
     </div>
 
@@ -74,10 +74,15 @@
     </div>
     <span style="font-size:small; color: gray;">{{filteredHelpers && filteredHelpers.length}} helpers</span>
   </div>
-  <button routerLink="add-helper">
-    <mat-icon>add</mat-icon>
-    <a style="color: white; text-decoration: none;">Add-helper</a>
-  </button>
+  <div class="save-add">
+    <div class="save" (click)="saveAsExcel()">
+      <mat-icon>download</mat-icon>
+    </div>
+    <button routerLink="add-helper">
+      <mat-icon>add</mat-icon>
+      <a style="color: white; text-decoration: none;">Add-helper</a>
+    </button>
+  </div>
 </mat-toolbar>
 
 <!-- /// Data  -->

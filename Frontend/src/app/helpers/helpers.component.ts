@@ -19,6 +19,8 @@ import { MatCardModule } from '@angular/material/card'
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { ApiService } from '../api.service';
 
+import * as XLSX from 'xlsx';
+
 interface Helper {
   _id?: string,
   name: string;
@@ -79,7 +81,7 @@ export class HelpersComponent {
   @ViewChild('popupRef') popupRef!: ElementRef;
 
   togglePopup(event: MouseEvent) {
-    event.stopPropagation(); 
+    event.stopPropagation();
     this.openFilter = !this.openFilter;
   }
 
@@ -249,6 +251,16 @@ export class HelpersComponent {
     return new Blob([byteArray], { type: mime });
   }
 
+  saveAsExcel(): void {
+    if (confirm(`Do you want to download the filtered helpers in excel sheet format ?`)) {
+      const worksheet: XLSX.WorkSheet = XLSX.utils.json_to_sheet(this.filteredHelpers);
+      const workbook: XLSX.WorkBook = {
+        Sheets: { 'Helpers': worksheet },
+        SheetNames: ['Helpers']
+      };
+      XLSX.writeFile(workbook, 'selected-helpers.xlsx');
+    }
+  }
 
 }
 
